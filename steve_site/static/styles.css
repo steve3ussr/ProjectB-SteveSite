@@ -1,0 +1,75 @@
+/* styles.css */
+
+.site-header {
+    /* 将头部背景设为灰色，方便查看 */
+    background-color: #333; 
+    color: white;
+    padding: 10px 20px;
+    display: flex; /* 启用 Flexbox */
+    justify-content: space-between; /* 将子元素（左侧和右侧）推向两端 */
+    align-items: center; /* 垂直居中对齐 */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.site-logo {
+    height: 30px; /* Logo 大小 */
+    margin-right: 10px;
+}
+
+.user-status {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    height: 30px;
+    border-radius: 50%; /* 圆形头像 */
+    margin-right: 8px;
+}
+/* styles.css */
+
+.main-nav {
+    background-color: #f4f4f4; /* 导航栏背景色 */
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.main-nav ul {
+    list-style: none; /* 移除列表前的点 */
+    padding: 0;
+    margin: 0;
+    display: flex; /* 启用 Flexbox */
+}
+
+.main-nav li {
+    margin-right: 20px; /* 链接之间的间距 */
+}
+
+.main-nav a {
+    text-decoration: none; /* 移除下划线 */
+    color: #333;
+    font-weight: bold;
+}
+
+/* span margin, 在元素左侧和右侧添加 12px 的外边距 */
+.my-span-margin {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+/* 将a标签做成button的模样 */
+.button-style {
+    text-decoration: none; /* 移除下划线 */
+    display: inline-block; /* 允许 padding */
+    padding: 2px 5px;
+    background-color: #6f7377;
+    color: white;
+    border: 1px solid #6f7377;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
