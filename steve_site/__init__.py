@@ -21,13 +21,13 @@ def create_app():
     # |     Create Instance Path and DB     |
     # +-------------------------------------+
     create_inst_path(app.instance_path)
-    # db_api._db_create(app)
+    db_api.db_create(app)
 
     # +----------------------------------------+
     # |     Register Blueprint, CLI, etc.      |
     # +----------------------------------------+
-    # db_api._db_register(app)
-    # app.register_blueprint(auth.bp)
+    db_api.db_register(app)
+    app.register_blueprint(auth.bp)
     # app.register_blueprint(list_api.bp)
     # 1
 

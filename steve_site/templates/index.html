@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block title %}
     <title>Steve's Site</title>
+    {% endblock %}
+
     <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
 
+<body>
+{% block content %}
     <header class="site-header">
         <div class="header-left">
-<!--            <img src="logo.png" alt="站点 Logo" class="site-logo">-->
             <h1>Steve's Site</h1>
         </div>
         <div class="header-right">
@@ -18,13 +22,13 @@
 <!--                <img src="avatar.jpg" alt="用户头像" class="user-avatar">-->
                 {% if "username" not in session %}
                 <span class="my-span-margin">Hi, 陌生人! </span>
-                <a href="/login" class="button-style">注册/登录</a>
+                <a href="/auth/login" class="button-style">注册/登录</a>
                 {% else %}
                 <span class="my-span-margin">Hi, {{session["username"]}}! </span>
-                <a href="/logout" class="button-style">退出登录</a>
+                <a href="/auth/logout" class="button-style">退出登录</a>
                 {% endif %}
             </div>
-            </div>
+        </div>
     </header>
 
     <nav class="main-nav">
@@ -40,6 +44,7 @@
         <h2>欢迎来到我的网站！</h2>
         <p>这是网站的主体内容区域。</p>
     </main>
+{% endblock %}
 
     <footer class="site-footer">
         <p>&copy; 2025 我的个人网站</p>

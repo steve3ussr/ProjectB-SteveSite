@@ -73,3 +73,50 @@
     cursor: pointer;
     text-align: center;
 }
+
+.form-container {
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 35vh;
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group-button {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+    font-size: 1rem;
+}
+
+.form-username{
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 1px;
+    box-sizing: border-box; /* 确保 padding 不会增加总宽度 */
+    transition: border-color 0.3s;
+}
+
+.form-button-style {
+    text-decoration: none; /* 移除下划线 */
+    padding: 2px 5px;
+    background-color: #929395;
+    color: white;
+    border: 1px solid #6f7377;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
