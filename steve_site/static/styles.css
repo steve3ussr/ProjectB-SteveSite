@@ -80,17 +80,24 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 35vh;
+    min-height: 50vh;
     margin: 0;
 }
 
 .form-group {
     margin-bottom: 10px;
+    width: 300px;
 }
 
 .form-group-button {
     margin-top: 30px;
     text-align: center;
+}
+
+.form-unselectable {
+    margin-top: 30px;
+    text-align: center;
+    user-select: none;
 }
 
 .form-label {
