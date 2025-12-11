@@ -14,33 +14,29 @@
 <body>
 {% block content %}
     <header class="site-header">
-        <div class="header-left">
-            <h1>Steve's Site</h1>
+        <div>
+            <a href="/" id="site-logo">Steve's Site</a>
         </div>
-        <div class="header-right">
-            <div class="user-status">
-<!--                <img src="avatar.jpg" alt="用户头像" class="user-avatar">-->
-                {% if "username" not in session %}
-                <span class="my-span-margin">Hi, 陌生人! </span>
-                <a href="/auth/login" class="button-style">注册/登录</a>
-                {% else %}
-                <span class="my-span-margin">Hi, {{session["username"]}}! </span>
-                <a href="/auth/logout" class="button-style">退出登录</a>
-                {% endif %}
-            </div>
+
+        <div id="header-right">
+            {% if "username" not in session %}
+                <span>Hi, 陌生人!</span>
+                <a href="/auth/login">注册/登录</a>
+            {% else %}
+                <span>Hi, {{session["username"]}}!</span>
+                <a href="/auth/logout">退出登录</a>
+            {% endif %}
         </div>
     </header>
 
     <nav class="main-nav">
-        <ul>
-            <li><a href="/blog">博客</a></li>
-            <li><a href="/todo">待办清单</a></li>
-            <li><a href="/projects">项目</a></li>
-            <li><a href="/about">关于我</a></li>
-        </ul>
+        <a href="/blog">博客</a>
+        <a href="/todo">待办清单</a>
+        <a href="/projects">项目</a>
+        <a href="/about">关于我</a>
     </nav>
 
-    <main class="main-content">
+    <main>
         <h2>欢迎来到我的网站！</h2>
         <p>这是网站的主体内容区域。</p>
     </main>

@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 import os
-from steve_site import db_api, auth, list_api
+from steve_site import db_api, auth, blog
 
 
 def create_inst_path(inst_path):
@@ -28,8 +28,7 @@ def create_app():
     # +----------------------------------------+
     db_api.db_register(app)
     app.register_blueprint(auth.bp)
-    # app.register_blueprint(list_api.bp)
-    # 1
+    app.register_blueprint(blog.bp)
 
 
     # +-------------------+

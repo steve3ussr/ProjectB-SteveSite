@@ -1,5 +1,4 @@
 import re
-from os import abort
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort
 from steve_site.db_api import db_open
 from functools import wraps

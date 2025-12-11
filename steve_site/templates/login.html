@@ -6,50 +6,46 @@
 
 {% block content %}
 <header class="site-header">
-    <div class="header-left">
-        <h1>Steve's Site</h1>
+    <div>
+        <a href="/" id="site-logo">Steve's Site</a>
     </div>
 </header>
 
-<div class="form-container">
-    <form id="login-form" action="/login" method="post">
+<div class="auth-form-container">
+    <form id="login-form" action="/auth/login" method="post">
 
-        <div class="form-group">
-            <label class="form-label" for="login-username">用户名</label>
-            <input class="form-username"
+        <div class="auth-form-group">
+            <label class="form-label" for="auth-form-username">用户名</label>
+            <input class="form-input"
+                   id="auth-form-username"
                    type="text"
-                   id="login-username"
                    {% if user_default is defined %}
-                   value="{{user_default}}"
+                       value="{{user_default}}"
                    {%endif%}
                    name="username"
+                   required
+            >
+        </div>
+
+        <div class="auth-form-group">
+            <label class="form-label" for="auth-form-password">密码</label>
+            <input class="form-input"
+                   id="auth-form-password"
+                   type="password"
+                   name="password"
                    required>
         </div>
 
-        <div class="form-group">
-            <label class="form-label" for="login-password">密码</label>
-            <input class="form-username" type="password" id="login-password" name="password" required>
-        </div>
+        <button>注册/登录</button>
 
-        <div class="form-group-button">
-            <button class="form-button-style" type="submit" formaction="/auth/login">注册/登录</button>
-        </div>
-
-        <div class="form-unselectable" style="color: #f08103">
+        <div class="auth-form-warning">
         {% if get_flashed_messages() %}
             <span>{{get_flashed_messages()[0]}}</span>
         {%elif msg %}
             <span>{{msg}}</span>
-        {%else%}
-            <span> &nbsp;</span>
         {% endif %}
         </div>
 
     </form>
-
-
-
-
-
 </div>
 {% endblock %}

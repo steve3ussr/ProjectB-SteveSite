@@ -1,129 +1,221 @@
-/* styles.css */
-
+/*
+ +--------------------------+
+ |          HEADER          |
+ +--------------------------+
+*/
 .site-header {
-    /* 将头部背景设为灰色，方便查看 */
     background-color: #333; 
     color: white;
     padding: 10px 20px;
-    display: flex; /* 启用 Flexbox */
-    justify-content: space-between; /* 将子元素（左侧和右侧）推向两端 */
-    align-items: center; /* 垂直居中对齐 */
-}
-
-.header-left {
     display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
-.site-logo {
-    height: 30px; /* Logo 大小 */
-    margin-right: 10px;
+.site-header #site-logo {
+    display: block;
+    text-decoration: none;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin: 24px 0px;
 }
 
-.user-status {
-    display: flex;
-    align-items: center;
+.site-header #header-right span {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
-.user-avatar {
-    height: 30px;
-    border-radius: 50%; /* 圆形头像 */
-    margin-right: 8px;
+.site-header #header-right a {
+    text-decoration: none; /* 移除下划线 */
+    padding: 2px 5px;
+    background-color: #6f7377;
+    color: white;
+    border: 1px solid #6f7377;
+    border-radius: 4px;
 }
-/* styles.css */
 
+/*
+ +-----------------------+
+ |          NAV          |
+ +-----------------------+
+*/
 .main-nav {
-    background-color: #f4f4f4; /* 导航栏背景色 */
+    background-color: #f4f4f4;
     padding: 10px 20px;
     border-bottom: 1px solid #ddd;
-}
-
-.main-nav ul {
-    list-style: none; /* 移除列表前的点 */
-    padding: 0;
-    margin: 0;
-    display: flex; /* 启用 Flexbox */
-}
-
-.main-nav li {
-    margin-right: 20px; /* 链接之间的间距 */
+    display: flex;
+    justify-content: left;
+    align-items: center;
 }
 
 .main-nav a {
     text-decoration: none; /* 移除下划线 */
     color: #333;
     font-weight: bold;
+    padding-right: 20px;
 }
 
-/* span margin, 在元素左侧和右侧添加 12px 的外边距 */
-.my-span-margin {
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
-/* 将a标签做成button的模样 */
-.button-style {
-    text-decoration: none; /* 移除下划线 */
-    display: inline-block; /* 允许 padding */
-    padding: 2px 5px;
-    background-color: #6f7377;
-    color: white;
-    border: 1px solid #6f7377;
-    border-radius: 4px;
-    cursor: pointer;
+/*
+ +--------------------------+
+ |          FOOTER          |
+ +--------------------------+
+*/
+.site-footer {
     text-align: center;
+    font-size: 16px;
 }
 
-.form-container {
-    font-family: sans-serif;
+/*
+ +-----------------------------+
+ |          AUTH FORM          |
+ +-----------------------------+
+*/
+.auth-form-container {
     background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 50vh;
-    margin: 0;
+    min-height: 35vh;
+    padding: 40px;
 }
 
-.form-group {
-    margin-bottom: 10px;
+.auth-form-group {
+    padding-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
     width: 300px;
 }
 
-.form-group-button {
-    margin-top: 30px;
-    text-align: center;
-}
-
-.form-unselectable {
-    margin-top: 30px;
-    text-align: center;
-    user-select: none;
-}
-
-.form-label {
-    display: block;
+.auth-form-group > .form-label {
     margin-bottom: 5px;
     font-weight: bold;
     color: #555;
     font-size: 1rem;
 }
 
-.form-username{
+.auth-form-group > .form-input{
     width: 100%;
     padding: 5px;
     border: 1px solid #ccc;
-    border-radius: 1px;
-    box-sizing: border-box; /* 确保 padding 不会增加总宽度 */
-    transition: border-color 0.3s;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-.form-button-style {
-    text-decoration: none; /* 移除下划线 */
+.auth-form-container button {
+    margin: 20px auto 0px auto;
+    display: block;
     padding: 2px 5px;
     background-color: #929395;
     color: white;
     border: 1px solid #6f7377;
     border-radius: 4px;
-    cursor: pointer;
     font-size: 1rem;
+}
+
+.auth-form-warning {
+    margin-top: 30px;
+    text-align: center;
+    user-select: none;
+    color: #f08103;
+}
+
+/* ---------------------------------------------------- */
+/* 核心布局：Flexbox 实现侧边栏与主内容并排 */
+/* ---------------------------------------------------- */
+.blog-main-content {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.content-wrapper {
+    display: flex; /* 启用 Flexbox */
+    gap: 30px;     /* 侧边栏和主列表之间的间距 */
+    align-items: flex-start; /* 让侧边栏和主列表顶部对齐 */
+}
+
+/* 主博客列表区域，使其占据剩余所有空间 */
+.blog-list-main {
+    flex-grow: 1;
+    min-width: 0; /* 允许 Flex 项收缩 */
+}
+
+/* ---------------------------------------------------- */
+/* 侧边栏样式 */
+/* ---------------------------------------------------- */
+.sidebar {
+    /* 固定侧边栏宽度，这里设定为 250px */
+    flex: 0 0 250px;
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar h2 {
+    font-size: 1.3rem;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.sidebar label {
+    display: block; /* 标签独占一行 */
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.sidebar input[type="search"],
+.sidebar select {
+    width: 100%; /* 填满侧边栏的宽度 */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.apply-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #8175a7; /* 绿色按钮 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* ---------------------------------------------------- */
+/* 移动端调整 (堆叠布局) */
+/* ---------------------------------------------------- */
+@media (max-width: 768px) {
+    .content-wrapper {
+        /* 在小屏幕上，从并排改为垂直堆叠 */
+        flex-direction: column;
+    }
+
+    /* 侧边栏不再有固定宽度，而是占据整行 */
+    .sidebar {
+        flex: auto;
+        margin-bottom: 20px;
+    }
+
+    /* 侧边栏内的表单元素改为水平排列，以节省空间 */
+    .sidebar form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .filter-group {
+        flex: 1 1 auto; /* 允许元素在行内分配空间 */
+    }
+
+    .apply-button {
+        width: auto; /* 按钮不再强制 100% 宽度 */
+    }
 }
