@@ -4,43 +4,30 @@
 <title>注册</title>
 {% endblock %}
 
-{% block content %}
-<header class="site-header">
-    <div class="header-left">
-        <h1>Steve's Site</h1>
-    </div>
-</header>
+{% block header_right %}
+{% endblock %}
+{% block nav %}
+{% endblock %}
 
-<div class="form-container">
-    <form id="register-form" action="/register" method="post">
+{% block main %}
+<div class="auth-form-container">
+    <form id="register-form" action="/auth/register" method="post">
 
-        <div class="form-group">
-            <label class="form-label" for="register-code">邀请码</label>
-            <input class="form-username" type="text" id="register-code" name="register-code" required>
+        <div class="auth-form-group">
+            <label class="form-label" for="auth-register-code">邀请码</label>
+            <input class="form-input" type="text" id="auth-register-code" name="register-code" required>
         </div>
 
-        <div class="form-group-button">
-            <button class="form-button-style" type="submit" formaction="/auth/register">注册</button>
-        </div>
+        <button>注册</button>
 
-        <div class="form-group-button" style="color: #f08103">
-
-        {%if get_flashed_messages() %}
-            <span>&nbsp;{{ get_flashed_messages()[0] }}&nbsp;</span>
-
-        {% elif msg is not none %}
-            <span>&nbsp;1{{msg}}&nbsp;</span>
-
-        {%else%}
-            <span> &nbsp;&nbsp;</span>
-        {% endif %}
+        <div class="auth-form-warning">
+            {%if get_flashed_messages() %}
+                <span>&nbsp;{{ get_flashed_messages()[0] }}</span>
+            {% elif msg is not none %}
+                <span>&nbsp;{{msg}}&nbsp;</span>
+            {% endif %}
         </div>
 
     </form>
-
-
-
-
-
 </div>
 {% endblock %}

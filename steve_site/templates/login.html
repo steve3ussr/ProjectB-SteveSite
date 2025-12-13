@@ -4,13 +4,12 @@
 <title>注册/登录</title>
 {% endblock %}
 
-{% block content %}
-<header class="site-header">
-    <div>
-        <a href="/" id="site-logo">Steve's Site</a>
-    </div>
-</header>
+{% block header_right %}
+{% endblock %}
+{% block nav %}
+{% endblock %}
 
+{% block main %}
 <div class="auth-form-container">
     <form id="login-form" action="/auth/login" method="post">
 
@@ -39,11 +38,11 @@
         <button>注册/登录</button>
 
         <div class="auth-form-warning">
-        {% if get_flashed_messages() %}
-            <span>{{get_flashed_messages()[0]}}</span>
-        {%elif msg %}
-            <span>{{msg}}</span>
-        {% endif %}
+            {% if get_flashed_messages() %}
+                <span>{{get_flashed_messages()[0]}}</span>
+            {%elif msg %}
+                <span>{{msg}}</span>
+            {% endif %}
         </div>
 
     </form>
