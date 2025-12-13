@@ -21,6 +21,11 @@
     margin: 24px 0px;
 }
 
+.site-header #header-right {
+    flex: 0 0 250px;
+    text-align: right;
+}
+
 .site-header #header-right span {
     padding-left: 10px;
     padding-right: 10px;
@@ -117,45 +122,34 @@
     color: #f08103;
 }
 
-/* ---------------------------------------------------- */
-/* 核心布局：Flexbox 实现侧边栏与主内容并排 */
-/* ---------------------------------------------------- */
+/*
+ +-----------------------------+
+ |          BLOG MAIN          |
+ +-----------------------------+
+*/
 .blog-main-content {
     max-width: 1200px;
     margin: 20px auto;
-    padding: 0 15px;
 }
 
 .content-wrapper {
-    display: flex; /* 启用 Flexbox */
-    gap: 30px;     /* 侧边栏和主列表之间的间距 */
-    align-items: flex-start; /* 让侧边栏和主列表顶部对齐 */
+    display: flex;
+    column-gap: 20px;
+    row-gap: 10px;
+    align-items: flex-start;
 }
 
-/* 主博客列表区域，使其占据剩余所有空间 */
-.blog-list-main {
-    flex-grow: 1;
-    min-width: 0; /* 允许 Flex 项收缩 */
-}
-
-/* ---------------------------------------------------- */
-/* 侧边栏样式 */
-/* ---------------------------------------------------- */
+/*
+ +----------------------------------------+
+ |          BLOG MAIN :: SIDEBAR          |
+ +----------------------------------------+
+*/
 .sidebar {
-    /* 固定侧边栏宽度，这里设定为 250px */
-    flex: 0 0 250px;
     background-color: #f8f8f8;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.sidebar h2 {
-    font-size: 1.3rem;
-    margin-top: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
+    flex: 0 0 250px;
+    font-size: 16px;
 }
 
 .filter-group {
@@ -172,50 +166,140 @@
 .sidebar input[type="search"],
 .sidebar select {
     width: 100%; /* 填满侧边栏的宽度 */
-    padding: 8px;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.apply-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #8175a7; /* 绿色按钮 */
+.sidebar button[type="submit"] {
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    width: 40%;
+    padding: 5px;
+    background-color: #8175a7;
     color: white;
     border: none;
     border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
 }
 
-/* ---------------------------------------------------- */
-/* 移动端调整 (堆叠布局) */
-/* ---------------------------------------------------- */
+/*
+ +-------------------------------------+
+ |          BLOG MAIN :: LIST          |
+ +-------------------------------------+
+*/
+.blog-entry {
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    min-width: 355px;
+}
+
+.blog-entry .blog-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.blog-entry .blog-meta-title {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.blog-entry .blog-meta-right {
+    color: #6B6B6B;
+    font-size: 14px;
+    flex: 0 0 130px;
+}
+
+.blog-entry .intro {
+    color: #676767;
+    text-decoration: none;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/*
+ +-------------------------------------------+
+ |          BLOG MAIN :: PAGINATION          |
+ +-------------------------------------------+
+*/
+.pagination {
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    padding: 0 30px;
+    font-size: 14px;
+    gap: 10px;
+    width: 355px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-link, .current-page {
+    padding: 2px 4px;
+    margin: 0 0;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
+    border-radius: 4px;
+    min-width: 15px;
+    text-align: center;
+}
+
+.page-link:hover {
+    background-color: #f0f0f0;
+}
+
+.current-page {
+    background-color: #8175a7;
+    color: white;
+    border-color: #ccc;
+    font-weight: bold;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none; /* 禁用点击事件 */
+}
+
+/*
+ +--------------------------------------------------+
+ |          BLOG MAIN (FOR WIDTH <= 768px)          |
+ +--------------------------------------------------+
+*/
 @media (max-width: 768px) {
     .content-wrapper {
-        /* 在小屏幕上，从并排改为垂直堆叠 */
         flex-direction: column;
+        justify-content: space-between;
     }
 
-    /* 侧边栏不再有固定宽度，而是占据整行 */
     .sidebar {
+        padding: 10px;
+        margin: 0 auto;
         flex: auto;
-        margin-bottom: 20px;
+        font-size: 14px;
     }
 
-    /* 侧边栏内的表单元素改为水平排列，以节省空间 */
     .sidebar form {
         display: flex;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 10px;
         align-items: center;
     }
 
     .filter-group {
-        flex: 1 1 auto; /* 允许元素在行内分配空间 */
+        min-width: 50px;
+        flex: 1 1 auto;
+        margin: 0px;
     }
 
-    .apply-button {
-        width: auto; /* 按钮不再强制 100% 宽度 */
+    .sidebar button[type="submit"] {
+        font-size: 14px;
+        text-align: center;
+        margin: 0 auto;
+        width: auto;
+        padding: 2px 5px;
     }
 }

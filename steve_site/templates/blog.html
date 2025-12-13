@@ -1,0 +1,94 @@
+{% extends 'index.html' %}
+
+{% block title %}
+<title>Blog</title>
+{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div>
+        <a href="/" id="site-logo">Steve's Site</a>
+    </div>
+
+    <div id="header-right">
+        {% if "username" not in session %}
+            <span>Hi, 陌生人!</span>
+            <a href="/auth/login">注册/登录</a>
+        {% else %}
+            <span>Hi, {{session["username"]}}!</span>
+            <a href="/auth/logout">退出登录</a>
+        {% endif %}
+    </div>
+</header>
+
+<nav class="main-nav">
+    <a href="/blog">博客</a>
+    <a href="/todo">待办清单</a>
+    <a href="/projects">项目</a>
+    <a href="/about">关于我</a>
+</nav>
+
+<main class="blog-main-content">
+
+    <div class="content-wrapper">
+
+        <section class="sidebar">
+            <form>
+                <div class="filter-group">
+                    <label for="sort">显示排序:</label>
+                    <select id="sort" name="sort">
+                        <option value="default">系统推荐</option>
+                        <option value="date_desc">最新发布</option>
+                        <option value="popular">最受欢迎</option>
+                        <option value="edit_desc">最近更新</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="keyword">搜索关键词:</label>
+                    <input type="search" id="keyword" name="keyword">
+                </div>
+
+                <div class="filter-group">
+                    <label>
+                        仅看我的文章 <input type="checkbox" name="my_posts">
+                    </label>
+                </div>
+
+                <button type="submit">筛选</button>
+            </form>
+        </section>
+
+        <div class="blog-list-main">
+
+            <article class="blog-entry">
+                <div class="blog-meta">
+                    <a href="/post/123" class="blog-meta-title">博客文章的标题ABCDEFGQWERTY </a>
+                    <div class="blog-meta-right">
+                        <span>by 张三</span> |
+                        <time datetime="2025-12-09">2025.12.09</time>
+                    </div>
+                </div>
+
+                <a href="/post/123" class="intro">
+                    <p>
+                    这是博客正文的前几句话，作为摘要展示给读者。我们会将正文控制在一个合适的长度，比如不超过 80 个字符，来吸引用户点击查看全文...
+                    </p>
+                </a>
+            </article>
+
+            <section class="pagination">
+                <a href="/?page=1" class="page-link disabled">< 上一页</a>
+                <a href="/?page=1" class="page-link">1</a>
+                <span class="current-page">2</span>
+                <a href="/?page=3" class="page-link">3</a>
+                <a href="/?page=4" class="page-link">4</a>
+                <a href="/?page=3" class="page-link">下一页 ></a>
+            </section>
+        </div>
+
+    </div>
+
+</main>
+
+{% endblock %}
