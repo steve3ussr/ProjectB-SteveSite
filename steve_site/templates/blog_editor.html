@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+
+{% block title %}
+<title>Blog Detail</title>
+{% endblock %}
+
+{% block nav %}
+    {{ super() }}
+    <nav class="main-nav">
+        <a href="/blog/add">添加</a>
+        <a href="/blog/mine">看看我的</a>
+    </nav>
+{% endblock %}
+
+{% block main %}
+
+<main class="blog-editor">
+    <h1>编辑博文</h1>
+
+    <form action="/save-post" method="post">
+
+        <div class="form-group">
+            <label for="post-title">文章标题</label>
+            <input
+                type="text"
+                id="post-title"
+                name="title"
+                placeholder="请输入文章标题"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="post-content">文章内容</label>
+            <textarea
+                id="post-content"
+                name="content"
+                placeholder="在这里撰写您的文章内容..."
+                required
+            ></textarea>
+        </div>
+
+        <button type="submit">保存并发布</button>
+
+    </form>
+
+
+</main>
+
+{% endblock %}
