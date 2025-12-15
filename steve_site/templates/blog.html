@@ -4,16 +4,6 @@
 <title>Blog</title>
 {% endblock %}
 
-{% block nav %}
-    {{ super() }}
-    <nav class="main-nav">
-        <a href="/blog/add">添加</a>
-        <a href="/blog/mine">看看我的</a>
-        <a href="/blog/test_edit">debug编辑器</a>
-        <a href="/blog/test_view">debug viewer</a>
-    </nav>
-{% endblock %}
-
 {% block main %}
 
 <main class="blog-main-content">
@@ -49,30 +39,44 @@
 
         <div class="blog-list-main">
 
-            <article class="blog-entry">
-                <div class="blog-meta">
-                    <a href="/post/123" class="blog-meta-title">博客文章的标题ABCDEFGQWERTY </a>
-                    <div class="blog-meta-right">
-                        <span>by 张三</span> |
-                        <time datetime="2025-12-09">2025.12.09</time>
-                    </div>
-                </div>
+            {% if blog_entry_list == [] %}
+                <span>Oops, no blog yet! </span>
 
-                <a href="/post/123" class="intro">
-                    <p>
-                    这是博客正文的前几句话，作为摘要展示给读者。我们会将正文控制在一个合适的长度，比如不超过 80 个字符，来吸引用户点击查看全文...
-                    </p>
-                </a>
-            </article>
+            {% else %}
+                {% for blog_entry in blog_entry_list %}
 
-            <section class="pagination">
-                <a href="/?page=1" class="page-link disabled">< 上一页</a>
-                <a href="/?page=1" class="page-link">1</a>
-                <span class="current-page">2</span>
-                <a href="/?page=3" class="page-link">3</a>
-                <a href="/?page=4" class="page-link">4</a>
-                <a href="/?page=3" class="page-link">下一页 ></a>
-            </section>
+                    <article class="blog-entry">
+                        <div class="blog-meta">
+                            <a href={{ blog_entry.href_link }} class="blog-meta-title">
+                                {{ blog_entry["title"] }}
+                            </a>
+                            
+                            <div class="blog-meta-right">
+                                <span>by {{ blog_entry["author"] }}</span> |
+                                <time datetime={{ blog_entry["time_dash"] }}>{{ blog_entry["time_dot"] }}</time>
+                            </div>
+                        </div>
+
+                        <a href={{ blog_entry["href_link"] }}  class="intro">
+                            <p>
+                            {{ blog_entry["body"] }}
+                            </p>
+                        </a>
+                    </article>
+
+                {% endfor %}
+
+            {% endif %}
+
+
+<!--            <section class="pagination">-->
+<!--                <a href="/?page=1" class="page-link disabled">< 上一页</a>-->
+<!--                <a href="/?page=1" class="page-link">1</a>-->
+<!--                <span class="current-page">2</span>-->
+<!--                <a href="/?page=3" class="page-link">3</a>-->
+<!--                <a href="/?page=4" class="page-link">4</a>-->
+<!--                <a href="/?page=3" class="page-link">下一页 ></a>-->
+<!--            </section>-->
         </div>
 
     </div>

@@ -4,49 +4,19 @@
 <title>Blog Detail</title>
 {% endblock %}
 
-{% block nav %}
-    {{ super() }}
-    <nav class="main-nav">
-        <a href="/blog/add">添加</a>
-        <a href="/blog/mine">看看我的</a>
-    </nav>
-{% endblock %}
-
 {% block main %}
 
 <main class="blog-detail">
 
     <article class="film_review">
-      <h2>侏罗纪公园</h2>
+      <h2> {{ blog_entry.title }} </h2>
       <section class="main_review">
-        <h3>评论</h3>
-        <p>恐龙是伟大的！</p>
+        <p> {{ blog_entry.body }} </p>
       </section>
-      <section class="user_reviews">
-        <h3>用户评论</h3>
-        <article class="user_review">
-          <h4>太吓人了！</h4>
-          <p>对我来说太可怕了。</p>
-          <footer>
-            <p>
-              发表于
-              <time datetime="2015-05-16 19:00">5 月 16 日</time> 作者：Lisa。
-            </p>
-          </footer>
-        </article>
-        <article class="user_review">
-          <h4>我喜欢恐龙！</h4>
-          <p>我同意，恐龙是我的最爱。</p>
-          <footer>
-            <p>
-              发表于 <time datetime="2015-05-17 19:00">5 月 17 日</time> 作者：Tom。
-            </p>
-          </footer>
-        </article>
-      </section>
+
       <footer>
         <p>
-          发表于 <time datetime="2015-05-15 19:00">5 月 15 日</time> 作者：Staff。
+          发表于 <time datetime="2015-05-15 19:00">5 月 15 日</time> 作者：{{ blog_entry.author_id }}。
         </p>
       </footer>
     </article>

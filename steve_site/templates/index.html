@@ -33,10 +33,35 @@
 
     {% block nav %}
     <nav class="main-nav">
-        <a href="/blog">博客</a>
-        <a href="/todo">待办清单</a>
-        <a href="/projects">项目</a>
-        <a href="/about">关于我</a>
+        <div class="main-nav-entry-wrapper" id="main-blog-wrapper">
+            <a href="/blog">博客</a>
+            <nav class="sub-nav">
+                <a href="/blog/add">添加新的</a>
+                <a>A2</a>
+            </nav>
+        </div>
+        <div class="main-nav-entry-wrapper" id="main-todo-wrapper">
+            <a href="/todo">待办清单</a>
+            <nav class="sub-nav">
+                <a>B1</a>
+                <a>B2</a>
+            </nav>
+        </div>
+        <div class="main-nav-entry-wrapper" id="main-project-wrapper">
+            <a href="/project">项目</a>
+            <nav class="sub-nav">
+                <a>C1</a>
+                <a>C2</a>
+            </nav>
+        </div>
+        <div class="main-nav-entry-wrapper" id="main-about-wrapper">
+            <a href="/about">关于我</a>
+            <nav class="sub-nav">
+                <a>D1</a>
+                <a>D2</a>
+            </nav>
+        </div>
+
     </nav>
     {% endblock %}
 
@@ -52,4 +77,5 @@
     </footer>
 
 </body>
+<script src="/static/main.js"></script>
 </html>

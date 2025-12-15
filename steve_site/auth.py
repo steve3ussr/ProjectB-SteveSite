@@ -95,6 +95,6 @@ def force_login(f):
     @wraps(f)
     def _f(*args, **kwargs):
         if session.get('uid', None) is None:
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.login_get"))
         return f(*args, **kwargs)
     return _f
