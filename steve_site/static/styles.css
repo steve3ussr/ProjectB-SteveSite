@@ -6,32 +6,38 @@
 .site-header {
     background-color: #333; 
     color: white;
-    padding: 10px 20px;
+    padding: 10px;
     display: flex;
+    gap: 15px;
     justify-content: space-between;
     align-items: center;
 }
 
+.site-header #header-left {
+    flex: 0 0 auto;
+}
+
+.site-header #header-username {
+    flex: auto;
+    text-align: right;
+    word-break: break-all;
+}
+
+.site-header #header-auth-button {
+    flex: 0 0 auto;
+}
+
+
 .site-header #site-logo {
     display: block;
     text-decoration: none;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: bold;
     color: white;
-    margin: 24px 0px;
+    padding: 20px 0px;
 }
 
-.site-header #header-right {
-    flex: 0 0 250px;
-    text-align: right;
-}
-
-.site-header #header-right span {
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.site-header #header-right a {
+.site-header #header-auth-button a {
     text-decoration: none; /* 移除下划线 */
     padding: 2px 5px;
     background-color: #6f7377;
@@ -154,7 +160,6 @@
 
 .content-wrapper {
     display: flex;
-    column-gap: 20px;
     row-gap: 10px;
     align-items: flex-start;
 }
@@ -208,28 +213,39 @@
  |          BLOG MAIN :: LIST          |
  +-------------------------------------+
 */
+.blog-list-main {
+    padding: 0 10px 0 15px;
+    flex: 1 0 355px;
+}
+
 .blog-entry {
     padding: 10px 20px;
     border-bottom: 1px solid #ccc;
-    min-width: 355px;
 }
 
 .blog-entry .blog-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
 }
 
 .blog-entry .blog-meta-title {
     text-decoration: none;
     color: black;
     font-weight: bold;
+    flex: auto;
+}
+
+.blog-entry .blog-meta-right span {
+    word-break: break-all;
 }
 
 .blog-entry .blog-meta-right {
     color: #6B6B6B;
     font-size: 14px;
-    flex: 0 0 130px;
+    flex: auto;
+    text-align: right;
 }
 
 .blog-entry .intro {
@@ -291,8 +307,7 @@
 */
 @media (max-width: 768px) {
     .content-wrapper {
-        flex-direction: column;
-        justify-content: space-between;
+        display: grid;
     }
 
     .sidebar {
@@ -321,5 +336,9 @@
         margin: 0 auto;
         width: auto;
         padding: 2px 5px;
+    }
+
+    .blog-list-main {
+        padding: 0 10px;
     }
 }

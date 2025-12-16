@@ -77,7 +77,10 @@ def blog_edit(bid):
 @bp.route('/delete/<int:bid>')
 @force_login
 def blog_delete(bid):
-    return render_template(url_for('blog.index'))
+    con = db_open()
+    cur = con.execute("DELETE FROM blog WHERE id = ?", (bid,))
+    con.commit()
+    return redirect(url_for('blog.index_get'))
 
 @bp.route('/<int:bid>')
 def blog_view(bid):

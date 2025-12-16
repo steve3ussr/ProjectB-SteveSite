@@ -14,21 +14,26 @@
 <body>
 
     <header class="site-header">
-        <div>
+        <div id="header-left">
             <a href="/" id="site-logo">Steve's Site</a>
         </div>
 
-        {% block header_right %}
-        <div id="header-right">
+        <div id="header-username">
             {% if "username" not in session %}
-                <span>Hi, 陌生人!</span>
+                Hi, 陌生人!
+            {% else %}
+                Hi, {{session["username"]}}!
+            {% endif %}
+        </div>
+
+        <div id="header-auth-button">
+            {% if "username" not in session %}
                 <a href="/auth/login">注册/登录</a>
             {% else %}
-                <span>Hi, {{session["username"]}}!</span>
                 <a href="/auth/logout">退出登录</a>
             {% endif %}
         </div>
-        {% endblock %}
+
     </header>
 
     {% block nav %}
