@@ -7,7 +7,7 @@
 {% block main %}
 
 <main class="blog-detail">
-
+    <a href="/blog/edit">编辑</a><button id="blog-delete-button">删除</button>
     <article class="film_review">
       <h2> {{ blog_entry.title }} </h2>
       <section class="main_review">
@@ -23,4 +23,9 @@
 
 </main>
 
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="/static/blog.js"></script>
 {% endblock %}

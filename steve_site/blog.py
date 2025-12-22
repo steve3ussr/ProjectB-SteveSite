@@ -21,6 +21,11 @@ def shorten_start(s, limit):
         return s
     return s[:limit]
 
+def shorten_blog_body(s, limit=70):
+    if len(s) <= limit:
+        return s
+    return s[:limit] + '...[点击查看全文]'
+
 def time_decide(s1, s2, delimiter='.'):
     t1 = datetime.fromisoformat(s1)
     t2 = datetime.fromisoformat(s2)
@@ -38,7 +43,7 @@ def index_get():
         _blogs = {'href_link': f"/blog/{row['blog_id']}",
                   'author': row['author'],
                   'title': shorten_between(row['title'], 20),
-                  'body': shorten_start(row['body'], 80),
+                  'body': shorten_blog_body(row['body']),
                   'time_dot': time_decide(row['time_create'], row['time_edit']),
                   'time_dash': time_decide(row['time_create'], row['time_edit'], '-')}
         blogs.append(_blogs)
@@ -87,8 +92,8 @@ def blog_view(bid):
     con = db_open()
     blog_detail = con.execute("SELECT * FROM blog WHERE id = ?", (bid, )).fetchone()
 
-
-
+    if not blog_detail:
+        abort(404)
     return render_template('blog_detail.html', blog_entry=blog_detail)
 
 @bp.route('/test_view')

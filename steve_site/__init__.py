@@ -30,6 +30,13 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)
 
+    # +----------------------------------------+
+    # |     Register Blueprint, CLI, etc.      |
+    # +----------------------------------------+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template('404.html'), 404
+
 
     # +-------------------+
     # |     Test View     |
