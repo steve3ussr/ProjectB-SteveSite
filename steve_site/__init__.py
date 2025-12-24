@@ -34,8 +34,28 @@ def create_app():
     # |     Register Blueprint, CLI, etc.      |
     # +----------------------------------------+
     @app.errorhandler(404)
-    def page_not_found(error):
+    def error_404(error):
         return render_template('404.html'), 404
+
+    @app.route('/404')
+    def status_page_404():
+        return render_template('404.html'), 404
+
+    @app.errorhandler(401)
+    def error_401(error):
+        return render_template('401.html'), 401
+
+    @app.route('/401')
+    def status_page_401():
+        return render_template('401.html'), 401
+
+    @app.errorhandler(403)
+    def error_403(error):
+        return render_template('403.html'), 403
+
+    @app.route('/403')
+    def status_page_403():
+        return render_template('403.html'), 403
 
 
     # +-------------------+

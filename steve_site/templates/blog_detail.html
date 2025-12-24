@@ -7,7 +7,8 @@
 {% block main %}
 
 <main class="blog-detail">
-    <a href="/blog/edit">编辑</a><button id="blog-delete-button">删除</button>
+    <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry['id']) }}">编辑</a>
+    <a id="blog-delete-anchor" href="#">删除</a>
     <article class="film_review">
       <h2> {{ blog_entry.title }} </h2>
       <section class="main_review">

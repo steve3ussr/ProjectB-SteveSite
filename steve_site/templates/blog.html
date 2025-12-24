@@ -47,7 +47,7 @@
 
                     <article class="blog-entry">
                         <div class="blog-meta">
-                            <a href={{ blog_entry.href_link }} class="blog-meta-title">
+                            <a href={{ url_for('blog.view', bid=blog_entry['id']) }} class="blog-meta-title">
                                 {{ blog_entry["title"] }}
                             </a>
                             
@@ -57,7 +57,7 @@
                             </div>
                         </div>
 
-                        <a href={{ blog_entry["href_link"] }}  class="intro">
+                        <a href={{ url_for('blog.view', bid=blog_entry['id']) }}  class="intro">
                             <p>
                             {{ blog_entry["body"] }}
                             </p>

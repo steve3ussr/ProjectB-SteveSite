@@ -19,10 +19,6 @@ CREATE TABLE blog (
   title TEXT NOT NULL,
   body TEXT NOT NULL,
   pv INTEGER,
+  deleted_at TIMESTAMP DEFAULT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id)
-);
-
-CREATE TABLE list (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  content TEXT NOT NULL
 );

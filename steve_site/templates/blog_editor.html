@@ -9,7 +9,8 @@
 <main class="blog-editor">
     <h1>编辑博文</h1>
 
-    <form action="/blog/add" method="post">
+    <form action="{{ submit_href }}" method="post">
+        <!-- submit_href could be /blog/add or /blog/<int>/edit -->
 
         <div class="form-group">
             <label for="post-title">文章标题</label>
@@ -17,19 +18,25 @@
                 type="text"
                 id="post-title"
                 name="title"
-                placeholder="请输入文章标题"
+
+                {% if blog_detail is not defined %}
+                    value="请输入文章标题"
+                {% else %}
+                    value={{ blog_detail['title'] }}
+                {% endif %}
+
                 required
             >
         </div>
 
         <div class="form-group">
             <label for="post-content">文章内容</label>
-            <textarea
-                id="post-content"
-                name="content"
-                placeholder="在这里撰写您的文章内容..."
-                required
-            ></textarea>
+
+            {% if blog_detail is not defined %}
+                <textarea id="post-content" name="content" placeholder="在这里撰写您的文章内容..." required></textarea>
+            {% else %}
+                <textarea id="post-content" name="content" required> {{ blog_detail['body'] }} </textarea>
+            {% endif %}
         </div>
 
         <button type="submit">保存并发布</button>
