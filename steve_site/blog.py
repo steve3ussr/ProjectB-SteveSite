@@ -1,7 +1,4 @@
-from datetime import datetime
-from importlib.resources import contents
-
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort, current_app, g
+from flask import Blueprint, render_template, request, redirect, url_for, session, abort, current_app, g
 
 from steve_site.auth import force_login
 from steve_site.db_api import db_open
@@ -16,16 +13,17 @@ def shorten_blog_title(s, limit):
     limit = (limit-4)//2
     return f"{s[:limit]}...{s[-limit:]}"
 
+
 def shorten_blog_body(s, limit=70):
     if len(s) <= limit:
         return s
     return s[:limit] + '...[点击查看全文]'
 
-def time_decide(s1, s2, delimiter='.'):
-    t1 = datetime.fromisoformat(s1)
-    t2 = datetime.fromisoformat(s2)
+
+def time_decide(t1, t2, fmt=f'%Y-%m-%d %H:%M:%S'):
     res = t1 if t1 >= t2 else t2
-    return res.strftime(f'%Y{delimiter}%m{delimiter}%d-%H:%M:%S')
+    return res.strftime(fmt)
+
 
 @bp.route('/', methods=['GET', 'POST'])
 def index():
@@ -49,8 +47,8 @@ def index():
                   'author': row['author'],
                   'title': shorten_blog_title(row['title'], 20),
                   'body': shorten_blog_body(row['body']),
-                  'time_dot': time_decide(row['time_create'], row['time_edit']),
-                  'time_dash': time_decide(row['time_create'], row['time_edit'], '-')}
+                  'time_display': time_decide(row['time_create'], row['time_edit'], '%Y-%m-%d'),
+                  'time_datetime_attr': time_decide(row['time_create'], row['time_edit'])}
         blogs.append(_blogs)
 
     # GET method: return blog list
@@ -58,6 +56,7 @@ def index():
         return render_template('blog.html', blog_entry_list=blogs)
     # TODO: POST method is not implemented
     return render_template('blog.html', blog_entry_list=blogs)
+
 
 @bp.route('/add', methods=["GET", "POST"])
 @force_login
@@ -80,13 +79,57 @@ def add():
     con.commit()
     return redirect(url_for('blog.view', bid=blog_id))
 
+
 @bp.get('/<int:bid>')
 def view(bid):
-    con = db_open()
-    blog_detail = con.execute("SELECT * FROM blog WHERE id = ?", (bid, )).fetchone()
+    g.con = db_open()
+    blog_detail = g.con.execute("SELECT blog.*, user.username "
+                                "FROM blog LEFT JOIN user "
+                                "ON blog.author_id = user.id "
+                                "WHERE blog.id=?", (bid,)).fetchone()
     if not blog_detail:
         abort(404)
+    if blog_detail['deleted_at'] is not None:
+        abort(404)
+
+    if increase_pv(bid):
+        g.con.execute("UPDATE blog SET pv=pv+1 WHERE id=?", (bid,))
+        g.con.commit()
+        blog_detail['pv'] += 1
+
+    time_create, time_edit = blog_detail['created'], blog_detail['edited']
+    if time_edit > time_create:
+        blog_detail['release_type'] = "编辑于"
+        blog_detail['time_datetime_attr'] = time_edit.strftime('%Y-%m-%d %H:%M:%S')
+        blog_detail['time_display'] = time_edit.strftime('%Y-%m-%d %H:%M')
+    else:
+        blog_detail['release_type'] = "发布于"
+        blog_detail['time_datetime_attr'] = time_create.strftime('%Y-%m-%d %H:%M:%S')
+        blog_detail['time_display'] = time_create.strftime('%Y-%m-%d %H:%M')
+
     return render_template('blog_detail.html', blog_entry=blog_detail)
+
+
+def increase_pv(bid):
+    # unauthenticate user doesn't count
+    if session.get('uid', None) is None:
+        return False
+
+    # user has no history
+    if session.get('history', None) is None:
+        session['history'] = [bid]
+        return True
+
+    # user has history
+    current_app.logger.info(f"user({session['uid']}): history: {session['history']}")
+    if bid in session.get('history'):
+        return False
+    else:
+        _ = session['history']
+        session.pop('history')
+        session['history'] = _ + [bid]
+        return True
+
 
 @bp.route('/<int:bid>/delete', methods=['DELETE'])
 @force_login
@@ -100,6 +143,7 @@ def delete(bid):
     g.con.execute("UPDATE blog SET deleted_at=CURRENT_TIMESTAMP WHERE id = ?", (bid,))
     g.con.commit()
     return redirect(url_for('blog.index'), code=303)
+
 
 @bp.route('/<int:bid>/edit', methods=["GET", "POST"])
 @force_login
@@ -125,6 +169,7 @@ def edit(bid):
     g.con.commit()
     return redirect(url_for('blog.view', bid=bid))
 
+
 def _authenticated_and_authorize(bid):
     """
     check edit/delete has Auth and Auth
@@ -137,6 +182,10 @@ def _authenticated_and_authorize(bid):
     # error code 20002: blog id non-exists
     if not cur:
         return 20002, 'non-exist blog id', 404
+
+    # error code 2004: blog is deleted
+    if cur['deleted_at'] is not None:
+        return 2004, f'blog is deleted at {cur["deleted_at"].strftime(f"%Y-%m-%d %H:%M:%S")}', 404
 
     # error code 20001: not login, which will logged as ERROR because this SHOULD DEFINITELY NOT HAPPEN
     uid = session.get('uid', None)

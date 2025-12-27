@@ -88,7 +88,7 @@ def logout():
 
     if uid is None or usr is None:
         abort(500)
-
+    session.pop('history')
     return redirect('/')
 
 def force_login(f):

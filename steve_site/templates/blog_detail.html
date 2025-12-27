@@ -7,7 +7,7 @@
 {% block main %}
 
 <main class="blog-detail">
-    <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry['id']) }}">编辑</a>
+    <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry.id) }}">编辑</a>
     <a id="blog-delete-anchor" href="#">删除</a>
     <article class="film_review">
       <h2> {{ blog_entry.title }} </h2>
@@ -17,7 +17,10 @@
 
       <footer>
         <p>
-          发表于 <time datetime="2015-05-15 19:00">5 月 15 日</time> 作者：{{ blog_entry.author_id }}。
+            {{ blog_entry.release_type }}  <!-- 发布于/编辑于 -->
+            <time datetime="{{ blog_entry.time_datetime_attr }}"> {{ blog_entry.time_display }} </time>
+            作者：{{ blog_entry.username }}
+            pv: {{ blog_entry.pv }}
         </p>
       </footer>
     </article>

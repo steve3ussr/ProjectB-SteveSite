@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, abort
 import os
 from steve_site import db_api, auth, blog
 
@@ -30,9 +30,9 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)
 
-    # +----------------------------------------+
-    # |     Register Blueprint, CLI, etc.      |
-    # +----------------------------------------+
+    # +-------------------------------------------+
+    # |     Register status code pages, etc.      |
+    # +-------------------------------------------+
     @app.errorhandler(404)
     def error_404(error):
         return render_template('404.html'), 404
@@ -57,13 +57,20 @@ def create_app():
     def status_page_403():
         return render_template('403.html'), 403
 
+    # +-------------------+
+    # |     UA verify     |
+    # +-------------------+
+    @app.before_request
+    def check_ua():
+        ua = request.headers.get('User-Agent', None)
+        if ua is None:
+            return
 
-    # +-------------------+
-    # |     Test View     |
-    # +-------------------+
-    @app.route('/test')
-    def resp_test():
-        return "Hello, world!"
+        ua = ua.lower()
+        keywords = ('bot', 'spider', 'crawler', 'python', 'selenium', 'fetch', 'slurp')
+        for keyword in keywords:
+            if keyword in ua:
+                abort(418)
 
     # +--------------------+
     # |     Index View     |

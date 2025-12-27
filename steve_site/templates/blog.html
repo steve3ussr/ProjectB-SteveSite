@@ -47,19 +47,21 @@
 
                     <article class="blog-entry">
                         <div class="blog-meta">
-                            <a href={{ url_for('blog.view', bid=blog_entry['id']) }} class="blog-meta-title">
-                                {{ blog_entry["title"] }}
+                            <a href="{{ url_for('blog.view', bid=blog_entry.id) }}" class="blog-meta-title">
+                                {{ blog_entry.title }}
                             </a>
                             
                             <div class="blog-meta-right">
-                                <span>by {{ blog_entry["author"] }}</span> |
-                                <time datetime={{ blog_entry["time_dash"] }}>{{ blog_entry["time_dot"] }}</time>
+                                <span>by {{ blog_entry.author }}</span> |
+                                <time datetime="{{ blog_entry.time_datetime_attr }}">
+                                    {{ blog_entry.time_display }}
+                                </time>
                             </div>
                         </div>
 
-                        <a href={{ url_for('blog.view', bid=blog_entry['id']) }}  class="intro">
-                            <p>
-                            {{ blog_entry["body"] }}
+                        <a href="{{ url_for('blog.view', bid=blog_entry.id) }}"  class="intro">
+                            <p style="word-break: break-all">
+                            {{ blog_entry.body }}
                             </p>
                         </a>
                     </article>

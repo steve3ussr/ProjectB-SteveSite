@@ -22,7 +22,7 @@
                 {% if blog_detail is not defined %}
                     value="请输入文章标题"
                 {% else %}
-                    value={{ blog_detail['title'] }}
+                    value={{ blog_detail.title }}
                 {% endif %}
 
                 required
@@ -35,7 +35,7 @@
             {% if blog_detail is not defined %}
                 <textarea id="post-content" name="content" placeholder="在这里撰写您的文章内容..." required></textarea>
             {% else %}
-                <textarea id="post-content" name="content" required> {{ blog_detail['body'] }} </textarea>
+                <textarea id="post-content" name="content" required> {{ blog_detail.body }} </textarea>
             {% endif %}
         </div>
 
