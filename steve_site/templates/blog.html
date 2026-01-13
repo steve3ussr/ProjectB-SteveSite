@@ -4,6 +4,11 @@
 <title>Blog</title>
 {% endblock %}
 
+{% block css %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/blog.css">
+{% endblock %}
+
 {% block main %}
 
 <main class="blog-main-content">
@@ -52,7 +57,13 @@
                             </a>
                             
                             <div class="blog-meta-right">
-                                <span>by {{ blog_entry.author }}</span> |
+                                {% if blog_entry.author == session.username %}
+                                    <span>by&nbsp;</span>
+                                    <span style="font-style: italic; text-decoration: underline">*You*</span>
+                                {% else %}
+                                    <span>by {{ blog_entry.author }}</span>
+                                {% endif %}
+                                |
                                 <time datetime="{{ blog_entry.time_datetime_attr }}">
                                     {{ blog_entry.time_display }}
                                 </time>

@@ -1,0 +1,18 @@
+.blog-detail {
+    margin: 20px 0px;
+    padding: 10px 20px;
+}
+
+#blog-edit-anchor, #blog-delete-anchor {
+    text-decoration: none; /* 移除下划线 */
+    padding: 2px 5px;
+    background-color: #6f7377;
+    color: white;
+    border: 1px solid #6f7377;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.film_review > h1 {
+    text-align: center;
+}

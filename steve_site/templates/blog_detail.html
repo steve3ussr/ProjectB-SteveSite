@@ -3,14 +3,24 @@
 {% block title %}
 <title>Blog Detail</title>
 {% endblock %}
+{% block css %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/blog-detail.css">
+{% endblock %}
 
 {% block main %}
 
 <main class="blog-detail">
-    <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry.id) }}">编辑</a>
-    <a id="blog-delete-anchor" href="#">删除</a>
+    <div class="blog-management">
+        <!-- only display edit/delete when author == current user -->
+        {% if blog_entry.username == session.username %}
+            <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry.id) }}">编辑</a>
+        <a id="blog-delete-anchor" href="#">删除</a>
+        {% endif %}
+    </div>
+
     <article class="film_review">
-      <h2> {{ blog_entry.title }} </h2>
+      <h1> {{ blog_entry.title }} </h1>
       <section class="main_review">
         <p> {{ blog_entry.body }} </p>
       </section>
@@ -19,8 +29,13 @@
         <p>
             {{ blog_entry.release_type }}  <!-- 发布于/编辑于 -->
             <time datetime="{{ blog_entry.time_datetime_attr }}"> {{ blog_entry.time_display }} </time>
-            作者：{{ blog_entry.username }}
-            pv: {{ blog_entry.pv }}
+            作者:
+            {% if blog_entry.username == session.username %}
+                <span style="font-style: italic; text-decoration: underline">*You*</span>
+            {% else %}
+                <span>{{ blog_entry.username }}</span>
+            {% endif %}
+            阅读量: {{ blog_entry.pv }}
         </p>
       </footer>
     </article>

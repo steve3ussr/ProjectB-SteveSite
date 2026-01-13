@@ -184,7 +184,8 @@ def _authenticated_and_authorize(bid):
         return 20002, 'non-exist blog id', 404
 
     # error code 2004: blog is deleted
-    if cur['deleted_at'] is not None:
+    current_app.logger.info(f"[BLOG-AUTH] {cur=}")
+    if 'deleted_at' in cur and cur['deleted_at'] is not None:
         return 2004, f'blog is deleted at {cur["deleted_at"].strftime(f"%Y-%m-%d %H:%M:%S")}', 404
 
     # error code 20001: not login, which will logged as ERROR because this SHOULD DEFINITELY NOT HAPPEN

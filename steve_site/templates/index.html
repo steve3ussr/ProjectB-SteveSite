@@ -8,7 +8,9 @@
     <title>Steve's Site</title>
     {% endblock %}
 
-    <link rel="stylesheet" href="/static/styles.css">
+    {% block css %}
+        <link rel="stylesheet" href="/static/main.css">
+    {% endblock %}
 </head>
 
 <body>
@@ -18,6 +20,7 @@
             <a href="/" id="site-logo">Steve's Site</a>
         </div>
 
+        {% block header_right %}
         <div id="header-username">
             {% if "username" not in session %}
                 Hi, 陌生人!
@@ -25,6 +28,7 @@
                 Hi, {{session["username"]}}!
             {% endif %}
         </div>
+        {% endblock %}
 
         <div id="header-auth-button">
             {% if "username" not in session %}
@@ -78,7 +82,8 @@
     {% endblock %}
 
     <footer class="site-footer">
-        <p>&copy; 2025 我的个人网站</p>
+        <p>&copy; 2025 Steve's Site</p>
+        <p style="font-style: italic; font-size: 0.7rem">An Indie Web Project by steve3ussr</p>
     </footer>
 
 </body>
