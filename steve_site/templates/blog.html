@@ -16,25 +16,38 @@
     <div class="content-wrapper">
 
         <section class="sidebar">
-            <form>
+            <form action="/blog/", method="GET">
                 <div class="filter-group">
-                    <label for="sort">显示排序:</label>
-                    <select id="sort" name="sort">
-                        <option value="default">系统推荐</option>
-                        <option value="date_desc">最新发布</option>
-                        <option value="popular">最受欢迎</option>
-                        <option value="edit_desc">最近更新</option>
+                    <label for="blog-index-sort">显示排序:</label>
+                    <select id="blog-index-sort" name="sort">
+                        <option value="default"   {% if sidebar_default_value.sort_type=="default" %}   selected {% endif %}>系统推荐</option>
+                        <option value="date_desc" {% if sidebar_default_value.sort_type=="date_desc" %} selected {% endif %}>最新发布</option>
+                        <option value="popular"   {% if sidebar_default_value.sort_type=="popular" %}   selected {% endif %}>最受欢迎</option>
+                        <option value="edit_desc" {% if sidebar_default_value.sort_type=="edit_desc" %} selected {% endif %}>最近更新</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
-                    <label for="keyword">搜索关键词:</label>
-                    <input type="search" id="keyword" name="keyword">
+                    <label for="blog-index-keyword">搜索关键词:</label>
+                    <input
+                            type="search"
+                            id="blog-index-keyword"
+                            name="keyword"
+                            {% if sidebar_default_value.search_keyword is not none %}
+                            value={{ sidebar_default_value.search_keyword }}
+                            {% endif %}
+                    >
                 </div>
 
                 <div class="filter-group">
                     <label>
-                        仅看我的文章 <input type="checkbox" name="my_posts">
+                        仅看我的文章 <input
+                                        type="checkbox"
+                                        name="my_posts"
+                                        {% if sidebar_default_value.flag_mine_only %}
+                                            checked
+                                        {% endif %}
+                                    >
                     </label>
                 </div>
 

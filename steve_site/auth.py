@@ -83,12 +83,9 @@ def register():
 
 @bp.route('/logout')
 def logout():
-    uid = session.pop('uid', None)
-    usr = session.pop('username', None)
-
-    if uid is None or usr is None:
-        abort(500)
-    session.pop('history')
+    pop_key_list = ['uid', 'username', 'history']
+    for key in pop_key_list:
+        _ = session.pop(key, None)
     return redirect('/')
 
 def force_login(f):

@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, abort, current_app, g
-
 from steve_site.auth import force_login
 from steve_site.db_api import db_open
 
@@ -25,20 +24,35 @@ def time_decide(t1, t2, fmt=f'%Y-%m-%d %H:%M:%S'):
     return res.strftime(fmt)
 
 
-@bp.route('/', methods=['GET', 'POST'])
+@bp.get('/')
 def index():
-    con = db_open()
-    res = con.execute('SELECT blog.id AS blog_id, '
+    # parse GET request args if possible
+    sort_type = request.args.get('sort', None)
+    search_keyword = request.args.get('keyword', None)
+    flag_mine_only = request.args.get('my_posts') == 'on'
+    sidebar_default_value = {'sort_type': sort_type,
+                             'search_keyword': search_keyword,
+                             'flag_mine_only': flag_mine_only}
+
+    # SEARCH_KEYWORD
+    if search_keyword is None or search_keyword.strip() == '':
+        sql_search = ""
+    else:
+        sql_search = (f"WHERE title LIKE '%{search_keyword}%' OR"
+                      f"body LIKE '%{search_keyword}%'")
+
+    # GET BLOG LIST
+    g.con = db_open()
+    res = g.con.execute('SELECT blog.id AS blog_id, '
                       'user.username AS author, '
                       'blog.title AS title, '
                       'blog.body AS body, '
                       'blog.created AS time_create, '
                       'blog.edited AS time_edit, '
-                      'blog.deleted_at AS time_delete '
+                      'blog.deleted_at AS time_delete, '
+                      'blog.pv AS pv '
                       'FROM blog LEFT JOIN user '
                       'ON blog.author_id = user.id').fetchall()
-
-    # deleted blogs are excluded
     blogs = []
     for row in res:
         if row['time_delete'] is not None:
@@ -48,15 +62,36 @@ def index():
                   'title': shorten_blog_title(row['title'], 20),
                   'body': shorten_blog_body(row['body']),
                   'time_display': time_decide(row['time_create'], row['time_edit'], '%Y-%m-%d'),
-                  'time_datetime_attr': time_decide(row['time_create'], row['time_edit'])}
+                  'time_datetime_attr': time_decide(row['time_create'], row['time_edit']),
+                  '_created': row['time_create'],
+                  '_edited': row['time_edit'],
+                  '_pv': int(row['pv'])}
         blogs.append(_blogs)
 
-    # GET method: return blog list
-    if request.method == 'GET':
-        return render_template('blog.html', blog_entry_list=blogs)
-    # TODO: POST method is not implemented
-    return render_template('blog.html', blog_entry_list=blogs)
+    # SORT_TYPE
+    if sort_type == "date_desc":
+        blogs.sort(key=lambda x: x['_created'], reverse=True)
+    elif sort_type == "edit_desc":
+        blogs.sort(key=lambda x: x['_edited'], reverse=True)
+    elif sort_type == "popular":
+        blogs.sort(key=lambda x: x['_pv'], reverse=True)
+    else:
+        # TODO: 使用默认策略, 按照表中ID
+        pass
 
+    # FLAG_MINE_ONLY
+    if flag_mine_only:
+        uid = session.get('uid', None)
+        if uid is not None:
+            blogs = [_ for _ in blogs if _['author'] == uid]
+
+    return render_template('blog.html',
+                           blog_entry_list=blogs,
+                           sidebar_default_value=sidebar_default_value)
+
+
+def blog_sort_filter(lst, sort_type, search_keyword, flag_mine_only):
+    pass
 
 @bp.route('/add', methods=["GET", "POST"])
 @force_login

@@ -8,7 +8,7 @@ import time
 
 def factory_func(cursor, row):
     field = [col[0] for col in cursor.description]
-    current_app.logger.info(f"[factory_func] {field=}, {row=}")
+    # current_app.logger.info(f"[factory_func] {field=}, {row=}")
     return dict(zip(field, row))
 
 def datetime_sqlite2py(obj):
