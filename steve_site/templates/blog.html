@@ -11,6 +11,8 @@
 
 {% block main %}
 
+<button id="back-to-top-btn" aria-label="back-to-top"> ↑ <br>TOP</button>
+
 <main class="blog-main-content">
 
     <div class="content-wrapper">
@@ -27,34 +29,33 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <label for="blog-index-keyword">搜索关键词:</label>
-                    <input
-                            type="search"
-                            id="blog-index-keyword"
-                            name="keyword"
-                            {% if sidebar_default_value.search_keyword is not none %}
-                            value={{ sidebar_default_value.search_keyword }}
-                            {% endif %}
-                    >
-                </div>
+            <div class="filter-group">
+                <label for="blog-index-keyword">搜索关键词:</label>
+                <input
+                        type="search"
+                        id="blog-index-keyword"
+                        name="keyword"
+                        {% if sidebar_default_value.search_keyword is not none %}
+                        value={{ sidebar_default_value.search_keyword }}
+                        {% endif %}
+                >
+            </div>
 
-                <div class="filter-group">
-                    <label>
-                        仅看我的文章 <input
-                                        type="checkbox"
-                                        name="my_posts"
-                                        {% if sidebar_default_value.flag_mine_only %}
-                                            checked
-                                        {% endif %}
-                                    >
-                    </label>
-                </div>
+            <div class="filter-group">
+                <label>
+                    仅看我的文章 <input
+                                    type="checkbox"
+                                    name="my_posts"
+                                    {% if sidebar_default_value.flag_mine_only %}
+                                        checked
+                                    {% endif %}
+                                >
+                </label>
+            </div>
 
-                <button type="submit">筛选</button>
-            </form>
-        </section>
-
+            <button type="submit">筛选</button>
+        </form>
+    </section>
         <div class="blog-list-main">
 
             {% if blog_entry_list == [] %}
@@ -94,19 +95,26 @@
 
             {% endif %}
 
-
-<!--            <section class="pagination">-->
-<!--                <a href="/?page=1" class="page-link disabled">< 上一页</a>-->
-<!--                <a href="/?page=1" class="page-link">1</a>-->
-<!--                <span class="current-page">2</span>-->
-<!--                <a href="/?page=3" class="page-link">3</a>-->
-<!--                <a href="/?page=4" class="page-link">4</a>-->
-<!--                <a href="/?page=3" class="page-link">下一页 ></a>-->
-<!--            </section>-->
         </div>
-
+        <div style="text-align: center">
+            <button
+                id="blog-load-more-btn"
+                style="height: 30px;
+                       border: none;
+                       background: none;
+                       padding: 0;
+                       color: #0000ee;
+                       text-decoration: underline;
+                       cursor: pointer">
+                加载更多</button>
+        </div>
     </div>
 
 </main>
 
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="/static/blog.js"></script>
 {% endblock %}

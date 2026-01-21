@@ -14,8 +14,8 @@
 
 @media (max-width: 768px) {
     .app-container {
-    height: auto;
-    overflow: auto;
+        height: auto;
+        overflow: auto;
     }
 }
 

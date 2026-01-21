@@ -38,21 +38,22 @@ def index():
     if search_keyword is None or search_keyword.strip() == '':
         sql_search = ""
     else:
-        sql_search = (f"WHERE title LIKE '%{search_keyword}%' OR"
-                      f"body LIKE '%{search_keyword}%'")
+        sql_search = (f" WHERE title LIKE '%{search_keyword}%' OR"
+                      f" body LIKE '%{search_keyword}%'")
 
     # GET BLOG LIST
     g.con = db_open()
     res = g.con.execute('SELECT blog.id AS blog_id, '
-                      'user.username AS author, '
-                      'blog.title AS title, '
-                      'blog.body AS body, '
-                      'blog.created AS time_create, '
-                      'blog.edited AS time_edit, '
-                      'blog.deleted_at AS time_delete, '
-                      'blog.pv AS pv '
-                      'FROM blog LEFT JOIN user '
-                      'ON blog.author_id = user.id').fetchall()
+                        'user.username AS author, '
+                        'blog.title AS title, '
+                        'blog.body AS body, '
+                        'blog.created AS time_create, '
+                        'blog.edited AS time_edit, '
+                        'blog.deleted_at AS time_delete, '
+                        'blog.pv AS pv '
+                        'FROM blog LEFT JOIN user '
+                        'ON blog.author_id = user.id'
+                        f'{sql_search}').fetchall()
     blogs = []
     for row in res:
         if row['time_delete'] is not None:

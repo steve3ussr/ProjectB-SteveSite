@@ -4,7 +4,7 @@
  +-----------------------------+
 */
 .blog-main-content {
-    margin: 20px 10% 0 10%;
+    margin: 20px 10% 0 5%;
     flex: 1;
     box-sizing: border-box;
     overflow: hidden;
@@ -58,7 +58,7 @@
     margin: 0 auto;
     width: 40%;
     padding: 5px;
-    background-color: #8175a7;
+    background-color: #8283AD;
     color: white;
     border: none;
     border-radius: 4px;
@@ -73,7 +73,7 @@
     padding: 0 10px 0 15px;
     flex: 1 1 355px;
     overflow-y: auto;
-    height: calc(100vh - 230px);
+    height: calc(100vh - 230px - 10px);
 }
 
 .blog-entry {
@@ -113,49 +113,12 @@
     font-style: italic;
 }
 
-/*
- +-------------------------------------------+
- |          BLOG MAIN :: PAGINATION          |
- +-------------------------------------------+
-*/
-.pagination {
-    margin-top: 30px;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    padding: 0 30px;
-    font-size: 14px;
-    gap: 10px;
-    width: 355px;
-    justify-content: space-between;
-    align-items: center;
+#blog-load-more-btn {
+    display: none;
 }
 
-.page-link, .current-page {
-    padding: 2px 4px;
-    margin: 0 0;
-    border: 1px solid #ccc;
-    text-decoration: none;
-    color: #333;
-    border-radius: 4px;
-    min-width: 15px;
-    text-align: center;
-}
-
-.page-link:hover {
-    background-color: #f0f0f0;
-}
-
-.current-page {
-    background-color: #8175a7;
-    color: white;
-    border-color: #ccc;
-    font-weight: bold;
-}
-
-.disabled {
-    opacity: 0.5;
-    pointer-events: none; /* 禁用点击事件 */
+#back-to-top-btn {
+    display: none;
 }
 
 /*
@@ -169,8 +132,7 @@
     }
 
     .blog-main-content {
-        padding-bottom: 10px;
-        margin: 20px 10% 0px 10%;
+        margin: 20px 5% 0 5%;
     }
 
     .sidebar {
@@ -205,4 +167,49 @@
         padding: 0 10px;
         height: auto;
     }
+
+    #blog-list-more-btn {
+        display: inline;
+    }
+
+    .blog-list-main .blog-entry {
+        display: none;
+    }
+
+    .blog-list-main > .blog-entry[blog-visible="true"] {
+        display: block;
+    }
+
+    #blog-load-more-btn {
+        display: inline;
+    }
+
+    #back-to-top-btn {
+        display: inline;
+        position: fixed;
+        bottom: 70px;
+        right: -50px;
+        z-index: 100;
+
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.5s ease-in-out;
+
+        border: 1px;
+        width: 50px;
+        height: 50px;
+        background-color: #8283AD;
+        color: white;
+        border-radius: 50%;
+        padding: 1px 6px 3px 6px;
+
+        text-align: center;
+    }
+
+    #back-to-top-btn.back-to-top-btn-show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-80px);
+    }
+
 }

@@ -1,11 +1,11 @@
-var blogDeleteA = document.getElementById('blog-delete-anchor');
+// blog-detail-delete
+document.addEventListener('DOMContentLoaded', () => {
+    var blogDeleteA = document.getElementById('blog-delete-anchor');
+    if (!blogDeleteA) return;
 
-if (blogDeleteA) {
     blogDeleteA.addEventListener('click', async (event) => {
         event.preventDefault();
-
-        const flagConfirm = confirm("确定要删除吗?");
-        if (!flagConfirm) return;
+        if (!confirm("确定要删除吗?")) return;
 
         try {
             const currUrl = window.location.pathname;
@@ -15,4 +15,44 @@ if (blogDeleteA) {
             alert("不知道为什么, 但是请求失败了");
         }
     });
-}
+});
+
+// blog-back-to-top
+document.addEventListener('DOMContentLoaded', () => {
+    const backBtn = document.getElementById('back-to-top-btn');
+
+    window.addEventListener("scroll", () => {
+        const threshold = window.innerHeight * 0.8;
+        if (window.scrollY > threshold) backBtn.classList.add('back-to-top-btn-show');
+        else backBtn.classList.remove('back-to-top-btn-show');
+    }, {passive: true});
+
+    backBtn.addEventListener('click', () => {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+});
+
+// blog-list-main-load-more
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('blog-load-more-btn');
+    const entries = document.querySelectorAll('.blog-entry');
+
+    let defaultCount = 10;
+    const step = 20;
+
+    let currIndex = defaultCount;
+
+    const renderVisibleItems = () => {
+        entries.forEach((item, index) => {
+            if (index < currIndex) item.setAttribute('blog-visible', 'true');
+        });
+    };
+
+    renderVisibleItems();
+
+    btn.addEventListener('click', () => {
+        currIndex += step;
+        renderVisibleItems();
+        if (currIndex >= entries.length) btn.style.display = 'none';
+    });
+});
