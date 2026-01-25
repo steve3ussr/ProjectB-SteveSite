@@ -34,6 +34,9 @@ def index():
                              'search_keyword': search_keyword,
                              'flag_mine_only': flag_mine_only}
 
+    if flag_mine_only and session.get('uid', None) is None:
+        sidebar_default_value['flag_mine_only'] = False
+
     # SEARCH_KEYWORD
     if search_keyword is None or search_keyword.strip() == '':
         sql_search = ""

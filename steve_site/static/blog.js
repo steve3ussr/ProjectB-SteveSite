@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('blog-load-more-btn');
     const entries = document.querySelectorAll('.blog-entry');
+    if (entries.length == 0) btn.style.display = "none";
 
     let defaultCount = 10;
     const step = 20;

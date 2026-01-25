@@ -1,70 +1,65 @@
-/* main-nav-entry-wrapper array */
-var mainNavEntryWrapperArr = document.querySelectorAll(".main-nav-entry-wrapper");
+document.addEventListener("DOMContentLoaded", () => {
+    /* mouse enter */
+    function hdlMainNavEntryWrapperEnter(element) {
+        let subNav = element.querySelector(".sub-nav");
+        let mainA = element.querySelector("a");
 
+        /* forced restore status before execute enter */
+        element.style.width = `${element.getAttribute("originalWidth")}px`;
+        subNav.style.pointerEvents = "none";
+        mainNavEntryWrapperArr.forEach((item) => { if(element != item) item.style.pointerEvents = "none"; });
 
-function hdlMainNavEntryWrapperEnter(element) {
-    let subNav = element.querySelector(".sub-nav");
-    let a = element.querySelector("a");
+        /* add underline */
+        mainA.style.borderBottom = "2px solid rgba(155, 144, 233, 0.7)";
 
-    /* add underline for main-nav a */
-    a.style.borderBottom = "2px solid rgba(155, 144, 233, 0.7)";
+        /* calculate offset value */
+        let aWidth = mainA.clientWidth;
+        let subNavWidth = subNav.clientWidth;
 
-    /* calculate offset value */
-    let aWidth = a.clientWidth;
-    let subNavWidth = subNav.clientWidth;
+        /* translate subNav */
+        subNav.style.opacity = 1;
+        subNav.style.transform = `translateX(${aWidth + 15}px)`;
+        element.style.width = `${element.clientWidth + subNavWidth + 15}px`;  //
 
-    /* 
-        translate subNav by aWidth, opacity=1
-        adjust wrapper size
-     */
-    subNav.style.opacity = 1;
-    subNav.style.transform = `translateX(${aWidth+15}px)`;
-    element.style.pointerEvents = "auto";
-    element.style.width = `${element.clientWidth+subNavWidth}px`;
+        /* restore sub-nav pointer event */
+        subNav.style.pointerEvents = "auto";
+    }
 
-    // /* translate all main-nav-entry-wrapper behind */
-    // let behindingMainNavEntryWrapperArr = document.querySelectorAll(`#${element.id} ~ .main-nav-entry-wrapper`);
-    // behindingMainNavEntryWrapperArr.forEach((behindElement) => {
-    //     behindElement.style.transform = `translateX(${subNavWidth-40}px)`;
-    // });
+    /* mouse leave */
+    function hdlMainNavEntryWrapperLeave(element) {
+        let subNav = element.querySelector(".sub-nav");
+        let mainA = element.querySelector("a");
 
-}
+        /* forced restore status before execute enter */
+        mainNavEntryWrapperArr.forEach((item) => { if(element != item) item.style.pointerEvents = "auto"; });
 
-function hdlMainNavEntryWrapperLeave(element) {
-    let subNav = element.querySelector(".sub-nav");
-    let a = element.querySelector("a");
+        /* remove underline */
+        mainA.style.borderBottom = "2px solid rgba(155, 144, 233, 0)";
 
-    /* remove underline for main-nav a */
-    a.style.borderBottom = "2px solid rgba(155, 144, 233, 0)";
+        /* calculate offset value */
+        let aWidth = mainA.clientWidth;
+        let subNavWidth = subNav.clientWidth;
 
-    /* calculate offset value */
-    let aWidth = a.clientWidth;
-    let subNavWidth = subNav.clientWidth;
+        /* restore sub-nav pointer event */
+        subNav.style.pointerEvents = "none";
 
-    /* translate subNav by aWidth, opacity=0 */
-    subNav.style.opacity = 0;
-    subNav.style.transform = "translateX(0)";
-    element.style.pointerEvents = "none";
-    element.style.width = `${element.getAttribute("originalWidth")}px`;
+        /* translate subNav */
+        subNav.style.opacity = 0;
+        subNav.style.transform = "translateX(0)";
+        element.style.width = `${element.getAttribute("originalWidth")}px`;
+    }
 
-    // /* translate all main-nav-entry-wrapper behind */
-    // let behindingMainNavEntryWrapperArr = document.querySelectorAll(`#${element.id} ~ .main-nav-entry-wrapper`);
-    // behindingMainNavEntryWrapperArr.forEach((behindElement) => {
-    //     behindElement.style.transform = "translateX(0)";
-    // });
-}
+    /* add event listener foreach wrapper */
+    var mainNavEntryWrapperArr = document.querySelectorAll(".main-nav-entry-wrapper");
+    mainNavEntryWrapperArr.forEach((entry) => {
+        entry.addEventListener("mouseenter", () => {hdlMainNavEntryWrapperEnter(entry)});
+        entry.addEventListener("mouseleave", () => {hdlMainNavEntryWrapperLeave(entry)});
+        entry.setAttribute("originalWidth", entry.clientWidth);
+    });
 
-function hdlSubNavTransEnd(element) {
-    element.style.pointerEvents = "auto";
-}
-
-/* add event listener for each main-nav-entry-wrapper */
-mainNavEntryWrapperArr.forEach((entry) => {
-    entry.addEventListener('mouseenter', () => {hdlMainNavEntryWrapperEnter(entry)});
-    entry.addEventListener('mouseleave', () => {hdlMainNavEntryWrapperLeave(entry)});
-    entry.setAttribute("originalWidth", entry.clientWidth);
-});
-
-document.querySelectorAll(".sub-nav").forEach((subNavElement) => {
-    subNavElement.addEventListener("transitionend", () => {hdlSubNavTransEnd(subNavElement)});
+    /* add event listener foreach sub-nav */
+    var subNavArr = document.querySelectorAll(".sub-nav");
+    subNavArr.forEach((entry) => {
+        entry.setAttribute("active", false);
+    });
 });
