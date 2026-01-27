@@ -9,7 +9,11 @@
     {% endblock %}
 
     {% block css %}
-        <link rel="stylesheet" href="/static/main.css">
+        <link rel="stylesheet" href="/static/main-app-container.css">
+        <link rel="stylesheet" href="/static/main-header.css">
+        <link rel="stylesheet" href="/static/main-nav.css">
+        <link rel="stylesheet" href="/static/main-side-nav.css">
+        <link rel="stylesheet" href="/static/main-footer.css">
     {% endblock %}
 </head>
 
@@ -71,6 +75,45 @@
             </nav>
         </div>
 
+    </nav>
+
+    <nav>
+        <button class="side-nav-hamburger">≡</button>
+
+        <aside class="side-nav-drawer"><ul>
+            <li class="side-nav-entry-wrapper">
+                <div class="side-nav-entry">
+                    <a></a>
+                    <button>╳</button>
+                </div>
+            </li>
+
+            <li class="side-nav-entry-wrapper">
+                <div class="side-nav-entry">
+                    <a>博客</a>
+                    <button>▼</button>
+                </div>
+
+                <ul class="side-nav-sub-list">
+                    <li class="side-nav-sub-entry"><a>添加新的</a></li>
+                    <li class="side-nav-sub-entry"><a>我的</a></li>
+                </ul>
+            </li>
+
+            <li class="side-nav-entry-wrapper">
+                <div class="side-nav-entry">
+                    <a>待办清单</a>
+                    <button>▼</button>
+                </div>
+
+                <ul class="side-nav-sub-list">
+                    <li class="side-nav-sub-entry"><a>B1</a></li>
+                    <li class="side-nav-sub-entry"><a>B2</a></li>
+                </ul>
+            </li>
+        </ul></aside>
+
+        <div class="side-nav-cloak"></div>
     </nav>
     {% endblock %}
 

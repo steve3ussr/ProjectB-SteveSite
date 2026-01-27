@@ -1,0 +1,48 @@
+/*
+ +-----------------------+
+ |          NAV          |
+ +-----------------------+
+*/
+.main-nav {
+    background-color: #f4f4f4;
+    padding: 0px 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 20px;
+    height: 40px;
+}
+
+@media (max-width: 768px) {
+    .main-nav {
+        display: none;
+    }
+}
+
+.main-nav-entry-wrapper {
+    display: flex;
+    transition: 0.5s ease-in-out;
+    padding: 10px 0px;
+}
+
+.sub-nav {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.5s ease-in-out;
+    background-color: #ccc;
+    border-radius: 4px;
+    padding: 0px 10px;
+    gap: 10px;
+    display: flex;
+}
+
+.main-nav-entry-wrapper > a {
+    text-decoration: none; /* 移除下划线 */
+    color: #333;
+    font-weight: bold;
+    padding: 0 10px;
+    border-bottom: 2px solid rgba(155, 144, 233, 0);
+    transition: 0.5s ease-in-out;
+}

@@ -73,7 +73,14 @@
     padding: 0 10px 0 15px;
     flex: 1 1 355px;
     overflow-y: auto;
-    height: calc(100vh - 230px - 10px);
+    /*
+        header+nav: 100px;
+        blog-main margin-top: 20px padding: 10px;
+        footer: 50px
+
+        additional gap: 20px
+     */
+    height: calc(100vh - 100px - 30px - 50px - 20px);
 }
 
 .blog-entry {
