@@ -18,22 +18,25 @@
                 |---<a>
  */
 
+/* side-nav在宽屏模式下不可见 */
 .side-nav-drawer, .side-nav-cloak, .side-nav-hamburger {
     display: none;
 }
 
+/* hamburger按钮 */
 .side-nav-hamburger {
-    dont-family: math;
-    box-sizing: border-box;
-    border: 1px solid #000;
+    padding: 0;
+    font-family: math;
+    border: 1px solid #ddd;
     height: 40px;
     width: 40px;
     border-radius: 0px;
     background-color: #f4f4f4;
     cursor: pointer;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
 }
 
+/* 掩板: deactivated */
 .side-nav-cloak {
     position: fixed;
     top: 0;
@@ -47,46 +50,90 @@
     z-index: 150;
 }
 
+/* 掩板: activated */
 .side-nav-cloak.active {
     opacity: 1;
     visibility: visible;
 }
 
+/* 抽屉: deactivated */
 .side-nav-drawer {
     position: fixed;
-    top: 200px;
-    left: 0;
+    top: 0px;
+    left: 0px;
     width: 200px;
     height: 100%;
     background: #fff;
     z-index: 200;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.5s ease-in-out;
     display: flex;
     flex-direction: column;
 }
 
+/* 抽屉: activated */
 .side-nav-drawer.active {
     transform: translateX(0);
 }
 
+/* 关闭按钮 */
+#side-nav-close-btn {
+    transition: transform 0.7s ease-out;
+    width: 40px;
+    height: 40px;
+}
+
+/* 抽屉activated+关闭按钮 */
+.side-nav-drawer.active #side-nav-close-btn {
+    transform: rotate(180deg);
+}
+
+/* 一级list, 二级list */
 .side-nav-drawer ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
+/* 一级wrapper */
 .side-nav-entry-wrapper {
     max-height: 500px;
 }
 
+/* 所有的a链接 */
 .side-nav-drawer a {
-    display: block;
-    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     flex-grow: 1;
+    height: 40px;
     text-decoration: none;
     color: #333;
+    cursor: pointer;
+}
+
+.side-nav-entry > a {
+    padding-left: 20px;
+    font-weight: bold;
+}
+
+.side-nav-sub-entry > a {
+    padding-left: 60px;
+}
+
+/* 一级条目展开按钮: deactivated */
+.side-nav-entry > button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.7s ease-in-out;
+    width: 40px;
+    height: 40px;
+}
+
+/* 一级条目展开按钮: activated */
+.side-nav-entry-wrapper.expand .side-nav-entry > button {
+    transform: rotate(180deg);
 }
 
 /* 一级条目 */
@@ -95,24 +142,24 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #f5f5f5;
+    font-size: 1rem;
+    transition: background-color 0.5s ease-in-out;
 }
 
-/* 一级条目: 展开按钮 */
-.side-nav-entry > button {
-    padding: 15px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.5s;
+.side-nav-entry-wrapper.expand .side-nav-entry {
+    background-color: rgba(102, 103, 171, 0.3);
 }
 
-.side-nav-entry-wrapper.expand .side-nav-entry > button {
-    transform: rotate(180deg);
+.side-nav-sub-entry {
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* 二级条目 */
 .side-nav-sub-entry > a {
-    padding: 12px 40px;
+    padding-left: 30px;
     font-size: 0.9rem;
 }
 
@@ -126,7 +173,7 @@
 
 /* 二级条目列表: 展开 */
 .side-nav-sub-list.expand {
-    max-height: 100px;
+    max-height: 200px;
 }
 
 @media (max-width: 768px) {

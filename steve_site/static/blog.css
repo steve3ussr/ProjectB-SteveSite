@@ -122,6 +122,12 @@
 
 #blog-load-more-btn {
     display: none;
+    text-decoration: none;
+    font-style: italic;
+    color: #6667AB;
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
 }
 
 #back-to-top-btn {

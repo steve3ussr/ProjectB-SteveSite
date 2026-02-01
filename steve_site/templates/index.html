@@ -47,21 +47,22 @@
     {% block nav %}
     <nav class="main-nav">
         <div class="main-nav-entry-wrapper" id="main-blog-wrapper">
-            <a href="/blog">博客</a>
+            <a>博客</a>
             <nav class="sub-nav">
+                <a href="/blog">全部博客</a>
                 <a href="/blog/add">添加新的</a>
-                <a>A2</a>
+                <a href="/blog/?my_posts=on">我的</a>
             </nav>
         </div>
         <div class="main-nav-entry-wrapper" id="main-todo-wrapper">
-            <a href="/todo">待办清单</a>
+            <a>待办清单</a>
             <nav class="sub-nav">
                 <a>B1</a>
                 <a>B2</a>
             </nav>
         </div>
         <div class="main-nav-entry-wrapper" id="main-project-wrapper">
-            <a href="/project">项目</a>
+            <a>项目</a>
             <nav class="sub-nav">
                 <a>C1</a>
                 <a>C2</a>
@@ -69,22 +70,21 @@
         </div>
         <div class="main-nav-entry-wrapper" id="main-about-wrapper">
             <a href="/about">关于我</a>
-            <nav class="sub-nav">
-                <a>D1</a>
-                <a>D2</a>
-            </nav>
         </div>
 
     </nav>
 
     <nav>
-        <button class="side-nav-hamburger">≡</button>
+        <button class="side-nav-hamburger" id="side-nav-hamburger">≡</button>
 
         <aside class="side-nav-drawer"><ul>
-            <li class="side-nav-entry-wrapper">
+            <li class="side-nav-entry-wrapper-close">
+                <div class="side-nav-entry" style="height: 80px; border-bottom: 0">
+                    <a style="padding: 0; display:block; text-align: center">返回首页</a>
+                </div>
                 <div class="side-nav-entry">
                     <a></a>
-                    <button>╳</button>
+                    <button id="side-nav-close-btn">╳</button>
                 </div>
             </li>
 
@@ -95,8 +95,9 @@
                 </div>
 
                 <ul class="side-nav-sub-list">
-                    <li class="side-nav-sub-entry"><a>添加新的</a></li>
-                    <li class="side-nav-sub-entry"><a>我的</a></li>
+                    <li class="side-nav-sub-entry"><a href="/blog">全部博客</a></li>
+                    <li class="side-nav-sub-entry"><a href="/blog/add">添加新的</a></li>
+                    <li class="side-nav-sub-entry"><a href="/blog/?my_posts=on">我的</a></li>
                 </ul>
             </li>
 
@@ -110,6 +111,24 @@
                     <li class="side-nav-sub-entry"><a>B1</a></li>
                     <li class="side-nav-sub-entry"><a>B2</a></li>
                 </ul>
+            </li>
+
+            <li class="side-nav-entry-wrapper">
+                <div class="side-nav-entry">
+                    <a>项目</a>
+                    <button>▼</button>
+                </div>
+
+                <ul class="side-nav-sub-list">
+                    <li class="side-nav-sub-entry"><a>C1</a></li>
+                    <li class="side-nav-sub-entry"><a>C2</a></li>
+                </ul>
+            </li>
+
+            <li class="side-nav-entry-wrapper">
+                <div class="side-nav-entry">
+                    <a href="/about">关于我</a>
+                </div>
             </li>
         </ul></aside>
 
@@ -134,5 +153,5 @@
 {% block scripts %}
 <script src="/static/main.js"></script>
 {% endblock %}
-
+<a style="display: none" href="/honeypot"></a>
 </html>

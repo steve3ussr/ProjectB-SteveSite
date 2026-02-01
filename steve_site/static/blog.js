@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const backBtn = document.getElementById('back-to-top-btn');
 
+    if (!backBtn) return;
     window.addEventListener("scroll", () => {
         const threshold = window.innerHeight * 0.8;
         if (window.scrollY > threshold) backBtn.classList.add('back-to-top-btn-show');
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('blog-load-more-btn');
     const entries = document.querySelectorAll('.blog-entry');
-    if (entries.length == 0) btn.style.display = "none";
+    if ((entries.length == 0) && (btn)) btn.style.display = "none";
 
     let defaultCount = 10;
     const step = 20;
@@ -51,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderVisibleItems();
 
+    if (!btn) return;
     btn.addEventListener('click', () => {
         currIndex += step;
         renderVisibleItems();
