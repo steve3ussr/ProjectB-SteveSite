@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, abort
 import os
-from steve_site import db_api, auth, blog
+from steve_site import db_api, auth, blog, image
 
 
 def create_inst_path(inst_path):
@@ -29,6 +29,7 @@ def create_app():
     db_api.db_register(app)
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)
+    app.register_blueprint(image.bp)
 
     # +-------------------------------------------+
     # |     Register status code pages, etc.      |

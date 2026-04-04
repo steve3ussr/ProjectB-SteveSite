@@ -75,6 +75,7 @@ def register():
     ## stage 2: get uid
     uid = con.execute("SELECT id FROM user WHERE username=?", (usr, )).fetchone()['id']
     session['uid'] = uid
+    session['username'] = usr
     ## stage 3: delete outdate tokens
     session.pop('auth-register')
     session.pop('register-usr')

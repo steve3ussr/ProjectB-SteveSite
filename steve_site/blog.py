@@ -1,8 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, abort, current_app, g
 from steve_site.auth import force_login
 from steve_site.db_api import db_open
+import nh3
+import mistune
 
 
+markdown_converter = mistune.create_markdown(plugins=['strikethrough', 'table', 'task_lists', 'mark', 'math', 'spoiler'])
 bp = Blueprint('blog', __name__, url_prefix='/blog')
 
 
@@ -30,6 +33,8 @@ def index():
     sort_type = request.args.get('sort', None)
     search_keyword = request.args.get('keyword', None)
     flag_mine_only = request.args.get('my_posts') == 'on'
+
+    # set default value
     sidebar_default_value = {'sort_type': sort_type,
                              'search_keyword': search_keyword,
                              'flag_mine_only': flag_mine_only}
@@ -53,24 +58,33 @@ def index():
                         'blog.created AS time_create, '
                         'blog.edited AS time_edit, '
                         'blog.deleted_at AS time_delete, '
-                        'blog.pv AS pv '
+                        'blog.pv AS pv, '
+                        'blog.author_id AS author_id '
                         'FROM blog LEFT JOIN user '
                         'ON blog.author_id = user.id'
                         f'{sql_search}').fetchall()
     blogs = []
     for row in res:
-        if row['time_delete'] is not None:
-            continue
+        # start with _: not directly used in template
         _blogs = {'id': row['blog_id'],
                   'author': row['author'],
+                  '_author_id': row['author_id'],
                   'title': shorten_blog_title(row['title'], 20),
                   'body': shorten_blog_body(row['body']),
                   'time_display': time_decide(row['time_create'], row['time_edit'], '%Y-%m-%d'),
                   'time_datetime_attr': time_decide(row['time_create'], row['time_edit']),
+                  '_time_delete': row['time_delete'],
                   '_created': row['time_create'],
                   '_edited': row['time_edit'],
                   '_pv': int(row['pv'])}
         blogs.append(_blogs)
+
+    # FILTER
+    blogs = [_ for _ in blogs if _['_time_delete'] is None]
+    if flag_mine_only:
+        uid = session.get('uid', None)
+        if uid is not None:
+            blogs = [_ for _ in blogs if _['_author_id'] == uid]
 
     # SORT_TYPE
     if sort_type == "date_desc":
@@ -83,19 +97,10 @@ def index():
         # TODO: 使用默认策略, 按照表中ID
         pass
 
-    # FLAG_MINE_ONLY
-    if flag_mine_only:
-        uid = session.get('uid', None)
-        if uid is not None:
-            blogs = [_ for _ in blogs if _['author'] == uid]
-
     return render_template('blog.html',
                            blog_entry_list=blogs,
                            sidebar_default_value=sidebar_default_value)
 
-
-def blog_sort_filter(lst, sort_type, search_keyword, flag_mine_only):
-    pass
 
 @bp.route('/add', methods=["GET", "POST"])
 @force_login
@@ -145,6 +150,17 @@ def view(bid):
         blog_detail['release_type'] = "发布于"
         blog_detail['time_datetime_attr'] = time_create.strftime('%Y-%m-%d %H:%M:%S')
         blog_detail['time_display'] = time_create.strftime('%Y-%m-%d %H:%M')
+
+    # content convention
+    _ = blog_detail['body']
+    _ = markdown_converter(_)
+    _ = nh3.clean(_)
+    blog_detail['body'] = _
+
+    # title
+    _ = blog_detail['title']
+    _ = nh3.clean(_)
+    blog_detail['title'] = _
 
     return render_template('blog_detail.html', blog_entry=blog_detail)
 

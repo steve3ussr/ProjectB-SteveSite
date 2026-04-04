@@ -20,9 +20,9 @@
     </div>
 
     <article class="film_review">
-      <h1> {{ blog_entry.title }} </h1>
+      <h1> {{ blog_entry.title | safe}} </h1>
       <section class="main_review">
-        <p> {{ blog_entry.body }} </p>
+        <p> {{ blog_entry.body | safe}} </p>
       </section>
 
       <footer>
