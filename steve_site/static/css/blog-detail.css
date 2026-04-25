@@ -1,18 +1,43 @@
-.blog-detail {
-    margin: 20px 0px;
-    padding: 10px 20px;
+.blog-detail-wrapper {
+    margin: 20px;
 }
 
-#blog-edit-anchor, #blog-delete-anchor {
-    text-decoration: none; /* 移除下划线 */
-    padding: 2px 5px;
-    background-color: #6f7377;
-    color: white;
-    border: 1px solid #6f7377;
-    border-radius: 4px;
-    box-sizing: border-box;
+.blog-management {
+    display: flex;
+    gap: 35px;
+    align-items: center;
+    justify-content: flex-end;
 }
 
-.film_review > h1 {
-    text-align: center;
+.blog-management > a, a:visited {
+    text-decoration: none;
+}
+
+.blog-management > button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    cursor: pointer;
+}
+
+article > footer > p, .blog-management > a, button, a:visited {
+    display: flex;
+    align-items: baseline;
+    font-size: 1em;
+    color: #808080;
+    gap: 6px;
+    transition: 0.2s;
+}
+
+.blog-management > a:hover, button:hover {
+    color: #6667AB;
+}
+
+article > footer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-top: 10px;
 }

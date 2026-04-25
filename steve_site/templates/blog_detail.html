@@ -5,21 +5,43 @@
 {% endblock %}
 {% block css %}
     {{ super() }}
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/css/blog-detail.css">
+    <link rel="stylesheet" href="/static/css/github-markdown.min.css">
+    <style>
+    /* 必须：GitHub 样式要求容器设置此 class 并指定宽度 */
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 40px 0px 40px;
+            background-color: transparent !important; /* 强制透明 */
+            color: inherit;
+        }
+
+    </style>
 {% endblock %}
 
 {% block main %}
 
-<main class="blog-detail">
+<main class="blog-detail-wrapper">
     <div class="blog-management">
         <!-- only display edit/delete when author == current user -->
         {% if blog_entry.username == session.username %}
-            <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry.id) }}">编辑</a>
-        <a id="blog-delete-anchor" href="#">删除</a>
+            <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry.id) }}">
+                <i class="fa fa-pencil"></i>编辑
+            </a>
+            <a id="blog-delete-anchor" href="#">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
         {% endif %}
+            <button id="blog-share">
+                <i class="fa fa-external-link"></i>复制链接
+            </button>
     </div>
 
-    <article class="film_review">
+    <article class=" markdown-body">
       <h1> {{ blog_entry.title | safe}} </h1>
       <section class="main_review">
         <p> {{ blog_entry.body | safe}} </p>
@@ -29,12 +51,16 @@
         <p>
             {{ blog_entry.release_type }}  <!-- 发布于/编辑于 -->
             <time datetime="{{ blog_entry.time_datetime_attr }}"> {{ blog_entry.time_display }} </time>
+        </p>
+        <p>
             作者:
             {% if blog_entry.username == session.username %}
                 <span style="font-style: italic; text-decoration: underline">*You*</span>
             {% else %}
                 <span>{{ blog_entry.username }}</span>
             {% endif %}
+        </p>
+        <p>
             阅读量: {{ blog_entry.pv }}
         </p>
       </footer>
