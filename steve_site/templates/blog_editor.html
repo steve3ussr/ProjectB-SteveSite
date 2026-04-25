@@ -5,6 +5,10 @@
 {% endblock %}
 
 {% block main %}
+<link rel="stylesheet" href="/static/easymde.min.css">
+<script src="/static/easymde.min.js"></script>
+<!--<link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">-->
+<!--<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>-->
 
 <main class="blog-editor">
     <h1>编辑博文</h1>
@@ -33,9 +37,9 @@
             <label for="post-content">文章内容</label>
 
             {% if blog_detail is not defined %}
-                <textarea id="post-content" name="content" placeholder="在这里撰写您的文章内容..." required></textarea>
+                <textarea id="post-content" name="content" placeholder="在这里撰写您的文章内容..."></textarea>
             {% else %}
-                <textarea id="post-content" name="content" required>{{ blog_detail.body }}</textarea>
+                <textarea id="post-content" name="content">{{ blog_detail.body }}</textarea>
             {% endif %}
         </div>
 
@@ -45,5 +49,44 @@
 
 
 </main>
+<script>
+const easyMDE = new EasyMDE({
+    element: document.getElementById('post-content'),
+    spellChecker: false,
+    autosave: { enabled: true, uniqueId: "post-content" },
+
+    toolbar: ["clean-block", "bold", "italic", "strikethrough", "heading", "|", "unordered-list", "ordered-list",  "check-list", "|", "quote", "code", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen", "|", "guide"],
+
+    // 核心配置：自定义上传
+    uploadImage: true,
+    imageUploadFunction: function(file, onSuccess, onError) {
+        // 创建 FormData 用于发送文件
+        const formData = new FormData();
+        formData.append('image', file);
+
+        // 调用你的 Flask 图床接口
+        fetch('/image/post', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.large) {
+                // 关键点：调用 onSuccess 会自动在编辑器光标处插入 ![description](url)
+                onSuccess(data.large);
+            } else if (data.medium) {
+                onSuccess(data.medium);
+            } else if (data.original) {
+                onSuccess(data.original);
+            } else if (data.error) {
+                onError(data.error);
+            } else {
+                onError("上传失败");
+            }
+        })
+        .catch(err => onError("网络错误"));
+    }
+});
+</script>
 
 {% endblock %}

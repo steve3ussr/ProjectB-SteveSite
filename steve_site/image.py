@@ -2,13 +2,12 @@ import re
 from json import JSONDecodeError
 
 import requests
-from flask import Blueprint, render_template, request, flash
-
+from flask import Blueprint, render_template, request, flash, current_app, jsonify
 
 bp = Blueprint('image', __name__, url_prefix='/image')
 
-@bp.route('/post', methods=('GET', 'POST'))
-def post_image():
+@bp.route('/cors_post', methods=('GET', 'POST'))
+def cors_post_image():
     if request.method == 'GET':
         return render_template('image_post.html')
 
@@ -28,3 +27,16 @@ def post_image():
 @bp.get('/get')
 def get_image():
     pass
+
+@bp.post('/post')
+def post_image():
+    image = request.files['image']
+    if not re.match(r".+\.(jpg|jpeg|webp|gif|png)", image.filename.lower()):
+        return jsonify({"error": "看起来不像是图片"}), 500
+
+    resp = requests.post("http://127.0.0.1:5001/upload_image", files={'file': (image.filename, image)})
+
+    try:
+        return jsonify(resp.json()), 200
+    except JSONDecodeError:
+        return jsonify({'error': resp.text}), 500

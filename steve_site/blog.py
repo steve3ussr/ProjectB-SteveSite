@@ -9,6 +9,19 @@ markdown_converter = mistune.create_markdown(plugins=['strikethrough', 'table', 
 bp = Blueprint('blog', __name__, url_prefix='/blog')
 
 
+nh3_allowed_tags = nh3.ALLOWED_TAGS | {"input", }
+
+nh3_allowed_attributes = {
+    "li": {"class"},
+    "input": {
+        "class",
+        "type",
+        "disabled",
+        "checked"
+    }
+}
+
+
 def shorten_blog_title(s, limit):
     if len(s) <= limit:
         return s
@@ -107,7 +120,7 @@ def index():
 def add():
     # GET method
     if request.method == 'GET':
-        return render_template('blog_editor.html')
+        return render_template('blog_editor.html', submit_href=url_for("blog.add"))
 
     # POST method
     title = request.form['title']
@@ -153,8 +166,11 @@ def view(bid):
 
     # content convention
     _ = blog_detail['body']
+    current_app.logger.info(f"original content: {_}")
     _ = markdown_converter(_)
-    _ = nh3.clean(_)
+    current_app.logger.info(f"converted content: {_}")
+    _ = nh3.clean(_, attributes=nh3_allowed_attributes, tags=nh3_allowed_tags)
+    current_app.logger.info(f"cleaned content: {_}")
     blog_detail['body'] = _
 
     # title
