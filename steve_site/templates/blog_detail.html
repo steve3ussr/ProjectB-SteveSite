@@ -6,25 +6,12 @@
 {% block css %}
     {{ super() }}
     <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/github-markdown-light.min.css">
     <link rel="stylesheet" href="/static/css/blog-detail.css">
-    <link rel="stylesheet" href="/static/css/github-markdown.min.css">
-    <style>
-    /* 必须：GitHub 样式要求容器设置此 class 并指定宽度 */
-        .markdown-body {
-            box-sizing: border-box;
-            min-width: 200px;
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 40px 40px 0px 40px;
-            background-color: transparent !important; /* 强制透明 */
-            color: inherit;
-        }
-
-    </style>
 {% endblock %}
 
 {% block main %}
-
+<button id="back-to-top-btn" aria-label="back-to-top"> ↑ <br>TOP</button>
 <main class="blog-detail-wrapper">
     <div class="blog-management">
         <!-- only display edit/delete when author == current user -->
@@ -41,9 +28,9 @@
             </button>
     </div>
 
-    <article class=" markdown-body">
-      <h1> {{ blog_entry.title | safe}} </h1>
-      <section class="main_review">
+    <article>
+      <h1 class="article-title"> {{ blog_entry.title | safe}} </h1>
+      <section class="markdown-body">
         <p> {{ blog_entry.body | safe}} </p>
       </section>
 

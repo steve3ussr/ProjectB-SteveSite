@@ -1,28 +1,27 @@
 {% extends 'index.html' %}
 
 {% block title %}
-<title>Blog Detail</title>
+<title>Blog Editor</title>
 {% endblock %}
 
 {% block main %}
+<link rel="stylesheet" href="/static/css/github-markdown-light.min.css">
 <link rel="stylesheet" href="/static/css/easymde.min.css">
 <script src="/static/js/easymde.min.js"></script>
-<!--<link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">-->
-<!--<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>-->
-
 <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/css/blog-editor.css">
 
 <main class="blog-editor">
-    <h1>编辑博文</h1>
+    <h2>编辑博文</h2>
 
     <form action="{{ submit_href }}" method="post">
         <!-- submit_href could be /blog/add or /blog/<int>/edit -->
 
         <div class="form-group">
-            <label for="post-title">文章标题</label>
+            <label for="article-title">标题</label>
             <input
                 type="text"
-                id="post-title"
+                id="article-title"
                 name="title"
 
                 {% if blog_detail is not defined %}
@@ -36,12 +35,12 @@
         </div>
 
         <div class="form-group">
-            <label for="post-content">文章内容</label>
+            <label for="article-content">正文</label>
 
             {% if blog_detail is not defined %}
-                <textarea id="post-content" name="content" placeholder="在这里撰写您的文章内容..."></textarea>
+                <textarea id="article-content" name="content" placeholder="在这里撰写您的文章内容..."></textarea>
             {% else %}
-                <textarea id="post-content" name="content">{{ blog_detail.body }}</textarea>
+                <textarea id="article-content" name="content">{{ blog_detail.body }}</textarea>
             {% endif %}
         </div>
 
@@ -53,10 +52,11 @@
 </main>
 <script>
 const easyMDE = new EasyMDE({
-    element: document.getElementById('post-content'),
+    element: document.getElementById('article-content'),
     spellChecker: false,
-    autosave: { enabled: true, uniqueId: "post-content" },
+    autosave: { enabled: true, uniqueId: "article-content" },
     autoDownloadFontAwesome: false,
+    previewClass: 'markdown-body',
     toolbar: ["clean-block", "bold", "italic", "strikethrough", "heading", "|", "unordered-list", "ordered-list",  "check-list", "|", "quote", "code", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen", "|", "guide"],
 
     // 核心配置：自定义上传

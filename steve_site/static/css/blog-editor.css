@@ -1,0 +1,27 @@
+.editor-preview-active-side.markdown-body {
+    padding: 20px; /* 增加一点预览时的边距，看起来更舒服 */
+}
+
+.form-group {
+    margin: 0 20px 10px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input#article-title {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+    padding: 12px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input#article-title:focus, #article-title:focus-visible {
+    outline: #6667AB;        /* 聚焦时边框变蓝 */
+    box-shadow: 0 0 0 1.5px rgba(102,103,171,0.7); /* 增加柔和的外发光 */
+}
+
+.blog-editor > h2 {
+    margin-left: 10px;
+}
