@@ -13,7 +13,7 @@
     text-decoration: none;
 }
 
-.blog-management > button {
+.blog-management button {
     background: none;
     border: none;
     padding: 0;
@@ -24,7 +24,7 @@
 
 article > footer > p,
 .blog-management > a,
-.blog-management > button,
+.blog-management button,
 .blog-management > a:visited {
     display: flex;
     align-items: baseline;
@@ -34,7 +34,7 @@ article > footer > p,
     transition: 0.2s;
 }
 
-.blog-management > a:hover, button:hover {
+.blog-management > a:hover, .blog-management button:hover {
     color: #6667AB;
 }
 
@@ -93,4 +93,29 @@ article > footer {
     opacity: 1;
     visibility: visible;
     transform: translateX(-80px);
+}
+
+.share-btn-wrapper {
+    display: inline-block;
+    position: relative;
+}
+
+#share-bubble {
+    visibility: hidden;
+    position: absolute;
+    z-index: 10;
+    bottom: -200%;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+    white-space: nowrap;
+    border-radius: 4px;
+    border: 1px solid rgb(158 221 152 / 0.7);
+    color: #828282;
+    background-color: rgb(158 221 152 / 0.2);
+    padding: 4px 10px;
+}
+
+#share-bubble.show {
+    visibility: visible;
+    opacity: 1;
 }

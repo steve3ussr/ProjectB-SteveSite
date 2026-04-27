@@ -5,7 +5,9 @@
 {% endblock %}
 {% block css %}
     {{ super() }}
-    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/static/css/regular.min.css">
+    <link rel="stylesheet" href="/static/css/solid.min.css">
     <link rel="stylesheet" href="/static/css/github-markdown-light.min.css">
     <link rel="stylesheet" href="/static/css/blog-detail.css">
 {% endblock %}
@@ -17,15 +19,22 @@
         <!-- only display edit/delete when author == current user -->
         {% if blog_entry.username == session.username %}
             <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry.id) }}">
-                <i class="fa fa-pencil"></i>编辑
+                <i class="fas fa-edit"></i>编辑
             </a>
             <a id="blog-delete-anchor" href="#">
-                <i class="fa fa-trash-o"></i>删除
+                <i class="fas fa-trash-alt"></i>删除
             </a>
         {% endif %}
-            <button id="blog-share">
-                <i class="fa fa-external-link"></i>复制链接
-            </button>
+            <div class="share-btn-wrapper">
+                <button class="share-btn" onclick="copyLinkToClipboard(this)">
+                    <i class="fas fa-external-link-alt"></i>复制链接
+                </button>
+                <span id="share-bubble">
+                    <span style="margin-right: 4px"><i class="far fa-check-circle" aria-hidden="true"></i></span>
+                    <span>已复制!</span>
+                </span>
+            </div>
+
     </div>
 
     <article>

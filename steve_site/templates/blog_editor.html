@@ -8,7 +8,9 @@
 <link rel="stylesheet" href="/static/css/github-markdown-light.min.css">
 <link rel="stylesheet" href="/static/css/easymde.min.css">
 <script src="/static/js/easymde.min.js"></script>
-<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/css/fontawesome.min.css">
+<link rel="stylesheet" href="/static/css/regular.min.css">
+<link rel="stylesheet" href="/static/css/solid.min.css">
 <link rel="stylesheet" href="/static/css/blog-editor.css">
 
 <main class="blog-editor">
@@ -54,10 +56,11 @@
 const easyMDE = new EasyMDE({
     element: document.getElementById('article-content'),
     spellChecker: false,
-    autosave: { enabled: true, uniqueId: "article-content" },
+    autosave: { enabled: true, uniqueId: "article-content", text: "自动保存于: "},
     autoDownloadFontAwesome: false,
     previewClass: 'markdown-body',
-    toolbar: ["clean-block", "bold", "italic", "strikethrough", "heading", "|", "unordered-list", "ordered-list",  "check-list", "|", "quote", "code", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen", "|", "guide"],
+    toolbar: ["clean-block", "bold", "italic", "strikethrough", "heading", "|", "unordered-list", "ordered-list",  "check-list", "|", "quote", "code", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen"],
+    imageTexts: {sbInit: "可通过拖放或从剪贴板粘贴来添加图片"},
 
     // 核心配置：自定义上传
     uploadImage: true,

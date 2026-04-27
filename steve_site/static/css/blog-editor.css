@@ -25,3 +25,11 @@ input#article-title:focus, #article-title:focus-visible {
 .blog-editor > h2 {
     margin-left: 10px;
 }
+
+.editor-statusbar > span.words:before {
+    content: "字数: ";
+}
+
+.editor-statusbar > span.lines:before {
+    content: "行数: ";
+}
