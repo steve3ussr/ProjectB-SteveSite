@@ -1,5 +1,5 @@
 import re
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort, current_app
 from steve_site.db_api import db_open
 from functools import wraps
 
@@ -63,19 +63,26 @@ def register():
     reg_code = request.form['register-code']
 
     # error reg code
-    if not (re.match(r"\d+", reg_code) and int(reg_code)%2027==0):
+    level = current_app.otp_manager.verify(reg_code)
+    if level is False:
         flash('邀请码错误, 请重新输入')
         return render_template('register.html')
 
     # correct reg code
-    ## stage 1: insert new user
+    ## stage 1: insert new user and return uid
     con = db_open()
-    con.execute("INSERT INTO user(username, password) VALUES(?, ?)", (usr, pwd))
+    cur = con.execute("INSERT INTO user(username, password, level) "
+                      "VALUES(?, ?, ?)"
+                      "RETURNING id", (usr, pwd, level))
+    uid = cur.fetchone()['id']
     con.commit()
-    ## stage 2: get uid
-    uid = con.execute("SELECT id FROM user WHERE username=?", (usr, )).fetchone()['id']
+
+    ## stage 2: set session tokens
     session['uid'] = uid
     session['username'] = usr
+    session['user-level'] = level
+    current_app.logger.info(f"user register info: {usr=}, {uid=}, {level=}")
+
     ## stage 3: delete outdate tokens
     session.pop('auth-register')
     session.pop('register-usr')

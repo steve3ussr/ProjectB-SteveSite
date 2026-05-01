@@ -2,13 +2,13 @@
 -- Drop any existing data and create empty tables.
 
 DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS post;
-DROP TABLE IF EXISTS list;
+DROP TABLE IF EXISTS blog;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
+  level TEXT NOT NULL
 );
 
 CREATE TABLE blog (

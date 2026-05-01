@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, abort
 import os
 from steve_site import db_api, auth, blog, image
+from steve_site.otp_manager import OTPManager
 
 
 def create_inst_path(inst_path):
@@ -14,8 +15,9 @@ def create_app():
     # +-----------------------------+
     # |     Instance Config Map     |
     # +-----------------------------+
-    app.config.from_mapping(SECRET_KEY='dev',
-                            DB=os.path.join(app.instance_path, 'inst_runtime.db'))
+    app.config.from_pyfile('config.py')
+    app.config['DB'] = os.path.join(app.instance_path, app.config['DB_FILENAME'])
+    app.otp_manager = OTPManager(app)
 
     # +-------------------------------------+
     # |     Create Instance Path and DB     |
