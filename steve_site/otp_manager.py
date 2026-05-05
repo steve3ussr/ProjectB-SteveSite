@@ -18,11 +18,11 @@ class OTPManager:
                 otp = int(otp)
 
         if self.otp_admin.verify(otp, valid_window=2):
-            return 'admin'
+            return 'Admin'
         elif self.otp_operator.verify(otp, valid_window=2):
-            return 'operator'
+            return 'Operator'
         elif self.otp_user.verify(otp, valid_window=2):
-            return 'user'
+            return 'User'
         else:
             return False
 

@@ -20,5 +20,6 @@ CREATE TABLE blog (
   body TEXT NOT NULL,
   pv INTEGER DEFAULT 0,
   deleted_at TIMESTAMP DEFAULT NULL,
+  status TEXT DEFAULT 'PUBLIC',
   FOREIGN KEY (author_id) REFERENCES user (id)
 );

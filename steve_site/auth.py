@@ -2,6 +2,7 @@ import re
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort, current_app
 from steve_site.db_api import db_open
 from functools import wraps
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -31,13 +32,13 @@ def login_post():
     # case 1: new user, redirect to register
     if res is None:
         session['register-usr'] = usr
-        session['register-pwd'] = pwd
+        session['register-pwd'] = generate_password_hash(pwd)
         flash('看起来是位新用户！请输入邀请码')
         session['auth-register'] = True
         return redirect(url_for('auth.register'))
 
     # case 2: user exists
-    if res['password'] != pwd:
+    if not check_password_hash(res['password'], pwd):
         flash("密码错误")
         return render_template('login.html', user_default=usr)
 
@@ -59,7 +60,7 @@ def register():
         return render_template('register.html', msg=None)
 
     # extract parameters for POST
-    usr, pwd = session['register-usr'], session['register-pwd']
+    usr, pwd = session['register-usr'], generate_password_hash(session['register-pwd'])
     reg_code = request.form['register-code']
 
     # error reg code

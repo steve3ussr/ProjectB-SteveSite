@@ -1,7 +1,7 @@
 import os.path
 from datetime import datetime
 import click
-from flask import g, current_app, Flask
+from flask import g, current_app, Flask, app
 import sqlite3
 import time
 
@@ -22,6 +22,8 @@ def datetime_sqlite2py(obj):
 
 
 def db_open():
+    if "db" in g:
+        return g.db
     db_path = current_app.config['DB']
     if not os.path.exists(db_path):
         current_app.logger.error('try to open a missing db file')
@@ -41,6 +43,7 @@ def db_close(e):
 
 def db_create(app):
     db_path = app.config['DB']
+    app.logger.debug(f'<db_create> {db_path=}')
     if os.path.exists(db_path):
         app.logger.warning('Instance DB already already exists')
         return
