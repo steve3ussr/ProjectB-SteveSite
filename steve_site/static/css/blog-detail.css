@@ -119,3 +119,13 @@ article > footer {
     visibility: visible;
     opacity: 1;
 }
+
+.pill-badge-detail {
+    padding: 2px 12px;
+    border-radius: 999px;
+    margin-left: 8px;
+    font-size: 16px;
+
+    vertical-align: middle;
+    white-space: nowrap;
+}

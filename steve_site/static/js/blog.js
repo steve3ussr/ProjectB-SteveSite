@@ -17,6 +17,74 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// blog-detail-publish
+document.addEventListener('DOMContentLoaded', () => {
+    var blogPublishA = document.getElementById('blog-publish-anchor');
+    if (!blogPublishA) return;
+
+    blogPublishA.addEventListener('click', async (event) => {
+        event.preventDefault();
+        try {
+            const currUrl = window.location.pathname;
+            const resp = await fetch(`${currUrl}/publish`, {method: 'POST'});
+            window.location.href = resp.url;
+        } catch (error) {
+            alert("不知道为什么, 但是请求失败了");
+        }
+    });
+});
+
+// blog-detail-submit
+document.addEventListener('DOMContentLoaded', () => {
+    var blogSubmitA = document.getElementById('blog-submit-anchor');
+    if (!blogSubmitA) return;
+
+    blogSubmitA.addEventListener('click', async (event) => {
+        event.preventDefault();
+        try {
+            const currUrl = window.location.pathname;
+            const resp = await fetch(`${currUrl}/submit`, {method: 'POST'});
+            window.location.href = resp.url;
+        } catch (error) {
+            alert("不知道为什么, 但是请求失败了");
+        }
+    });
+});
+
+// blog-detail-hide
+document.addEventListener('DOMContentLoaded', () => {
+    var blogHideA = document.getElementById('blog-hide-anchor');
+    if (!blogHideA) return;
+
+    blogHideA.addEventListener('click', async (event) => {
+        event.preventDefault();
+        try {
+            const currUrl = window.location.pathname;
+            const resp = await fetch(`${currUrl}/hide`, {method: 'POST'});
+            window.location.href = resp.url;
+        } catch (error) {
+            alert("不知道为什么, 但是请求失败了");
+        }
+    });
+});
+
+// blog-detail-restore
+document.addEventListener('DOMContentLoaded', () => {
+    var blogRestoreA = document.getElementById('blog-restore-anchor');
+    if (!blogRestoreA) return;
+
+    blogRestoreA.addEventListener('click', async (event) => {
+        event.preventDefault();
+        try {
+            const currUrl = window.location.pathname;
+            const resp = await fetch(`${currUrl}/restore`, {method: 'POST'});
+            window.location.href = resp.url;
+        } catch (error) {
+            alert("不知道为什么, 但是请求失败了");
+        }
+    });
+});
+
 // blog-back-to-top
 document.addEventListener('DOMContentLoaded', () => {
     const backBtn = document.getElementById('back-to-top-btn');

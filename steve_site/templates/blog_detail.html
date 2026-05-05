@@ -10,35 +10,90 @@
     <link rel="stylesheet" href="/static/css/solid.min.css">
     <link rel="stylesheet" href="/static/css/github-markdown-light.min.css">
     <link rel="stylesheet" href="/static/css/blog-detail.css">
+    <link rel="stylesheet" href="/static/css/blog.css">
 {% endblock %}
 
 {% block main %}
 <button id="back-to-top-btn" aria-label="back-to-top"> ↑ <br>TOP</button>
 <main class="blog-detail-wrapper">
     <div class="blog-management">
-        <!-- only display edit/delete when author == current user -->
-        {% if blog_entry.username == session.username %}
-            <a id="blog-edit-anchor" href="{{ url_for('blog.edit', bid=blog_entry.id) }}">
-                <i class="fas fa-edit"></i>编辑
-            </a>
-            <a id="blog-delete-anchor" href="#">
-                <i class="fas fa-trash-alt"></i>删除
-            </a>
+        <!-- manage_list = ['edit', 'delete', 'publishX', 'restore', 'hide', 'submitX'] -->
+
+        {% if "edit" in manage_list %}
+        <a href="{{ url_for('blog.edit', bid=blog_entry.id) }}">
+            <i class="fas fa-edit"></i>编辑
+        </a>
         {% endif %}
-            <div class="share-btn-wrapper">
-                <button class="share-btn" onclick="copyLinkToClipboard(this)">
-                    <i class="fas fa-external-link-alt"></i>复制链接
-                </button>
-                <span id="share-bubble">
-                    <span style="margin-right: 4px"><i class="far fa-check-circle" aria-hidden="true"></i></span>
-                    <span>已复制!</span>
-                </span>
-            </div>
+
+        {% if "publish" in manage_list %}
+        <a id="blog-publish-anchor" href="#">
+            <i class="fas fa-paper-plane"></i>
+            {% if blog_entry.status=="HIDDEN" %}
+                转为公开
+            {% else %}
+                发布
+            {% endif %}
+        </a>
+        {% endif %}
+
+        {% if "submit" in manage_list %}
+        <a id="blog-submit-anchor" href="#">
+            <i class="fas fa-user-check"></i>提交审核
+        </a>
+        {% endif %}
+
+        {% if "delete" in manage_list %}
+        <a id="blog-delete-anchor" href="#">
+            <i class="fas fa-trash-alt"></i>删除
+        </a>
+        {% endif %}
+
+        {% if "hide" in manage_list %}
+        <a id="blog-hide-anchor" href="#">
+            <i class="fas fa-eye-slash"></i>隐藏
+        </a>
+        {% endif %}
+
+        {% if "restore" in manage_list %}
+        <a id="blog-restore-anchor" href="#">
+            <i class="fas fa-undo-alt"></i>
+            {% if blog_entry.status=="HIDDEN" %}
+                恢复至作者可修改
+            {% elif blog_entry.status=="DELETED" %}
+                恢复至公开
+            {% endif %}
+        </a>
+        {% endif %}
+
+        <div class="share-btn-wrapper">
+            <button class="share-btn" onclick="copyLinkToClipboard(this)">
+                <i class="fas fa-external-link-alt"></i>复制链接
+            </button>
+            <span id="share-bubble">
+                <span style="margin-right: 4px"><i class="far fa-check-circle" aria-hidden="true"></i></span>
+                <span>已复制!</span>
+            </span>
+        </div>
 
     </div>
 
     <article>
-      <h1 class="article-title"> {{ blog_entry.title | safe}} </h1>
+      <h1 class="article-title">
+          <span>{{ blog_entry.title | safe}}</span>
+          {% if blog_entry.status == "HIDDEN" %}
+          <span class="pill-badge-detail pill-badge-hidden">已隐藏: 非公开可见, 不可编辑</span>
+          {% elif blog_entry.status == "PUBLIC" %}
+            <!-- PASS -->
+          {% elif blog_entry.status == "DRAFT" %}
+              <span class="pill-badge-detail pill-badge-draft">草稿: 仅作者可见并编辑</span>
+          {% elif blog_entry.status == "DELETED" %}
+              <span class="pill-badge-detail pill-badge-deleted">已删除: 非公开可见, 可恢复</span>
+          {% elif blog_entry.status == "PENDING" %}
+              <span class="pill-badge-detail pill-badge-pending">修改中: 非公开可见, 作者可编辑</span>
+          {% endif %}
+
+
+      </h1>
       <section class="markdown-body">
         <p> {{ blog_entry.body | safe}} </p>
       </section>

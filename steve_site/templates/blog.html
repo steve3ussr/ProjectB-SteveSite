@@ -67,11 +67,23 @@
                     <article class="blog-entry">
                         <div class="blog-meta">
                             <a href="{{ url_for('blog.view', bid=blog_entry.id) }}" class="blog-meta-title">
-                                {{ blog_entry.title }}
+                                <span>{{ blog_entry.title }}</span>
+
+                                {% if blog_entry.status == "HIDDEN" %}
+                                    <span class="pill-badge-index pill-badge-hidden">Hidden</span>
+                                {% elif blog_entry.status == "PUBLIC" %}
+                                    <!-- PASS -->
+                                {% elif blog_entry.status == "DRAFT" %}
+                                    <span class="pill-badge-index pill-badge-draft">Draft</span>
+                                {% elif blog_entry.status == "DELETED" %}
+                                    <span class="pill-badge-index pill-badge-deleted">Deleted</span>
+                                {% elif blog_entry.status == "PENDING" %}
+                                    <span class="pill-badge-index pill-badge-pending">Pending</span>
+                                {% endif %}
                             </a>
                             
                             <div class="blog-meta-right">
-                                {% if blog_entry.author == session.username %}
+                                {% if blog_entry.author_id == session.uid %}
                                     <span>by&nbsp;</span>
                                     <span style="font-style: italic; text-decoration: underline">*You*</span>
                                 {% else %}
