@@ -47,13 +47,16 @@
         </div>
 
         <div style="margin: 0 20px 10px 20px;">
-            {% if submit_mode=="publish-only" %}
-                <button type="submit" name="action" value="publish">更新并发布</button>
-            {% elif submit_mode=="save-only" %}
-                <button type="submit" name="action" value="save">保存</button>
-            {% else %}
-                <button type="submit" name="action" value="save">保存为草稿</button>
-                <button type="submit" name="action" value="publish">发布</button>
+            {% if "save" in action_btn_list %}
+                <button type="submit" name="action" value="save">保存编辑</button>
+            {% endif %}
+
+            {% if "submit" in action_btn_list %}
+                <button type="submit" name="action" value="submit">提交审核</button>
+            {% endif %}
+
+            {% if "publish" in action_btn_list %}
+                <button type="submit" name="action" value="publish">发布为公开可见</button>
             {% endif %}
         </div>
 

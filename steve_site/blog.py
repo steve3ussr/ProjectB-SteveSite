@@ -380,32 +380,41 @@ def edit(bid):
     g.con = db_open()
     data = g.con.execute("SELECT title, body, status FROM blog WHERE id = ?", (bid,)).fetchone()
     if data['status'] == 'PENDING':
-        submit_mode = 'save-only'
+        action_btn_list = ['save', 'submit']
     elif data['status'] == 'PUBLIC':
-        submit_mode = "publish-only"
+        action_btn_list = ['publish']
     elif data['status'] == 'DRAFT':
-        submit_mode = "default"
+        action_btn_list = ['save', 'publish']
     else:
-        submit_mode = "default"
+        action_btn_list = []
 
     # GET method
     if request.method == 'GET':
         return render_template('blog_editor.html',
                                blog_detail=data,
                                submit_href=url_for("blog.edit", bid=bid),
-                               submit_mode=submit_mode)
+                               action_btn_list=action_btn_list)
 
     # POST method
     title = request.form['title']
     content = request.form['content']
     action = request.form['action']
 
-    if action == 'save' and submit_mode in ('save-only', 'default'):
+    if action not in action_btn_list:
+        return abort(409)
+
+
+    if action == 'save':
         g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP WHERE id=?", (title, content, bid))
         g.con.commit()
         return redirect(url_for('blog.view', bid=bid))
-    elif action == 'publish' and submit_mode in ('publish-only', 'default'):
+    elif action == 'publish':
         g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='PUBLIC' WHERE id=?", (title, content, bid))
+        g.con.commit()
+        return redirect(url_for('blog.view', bid=bid))
+    elif action == 'submit':
+        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='HIDDEN' WHERE id=?",
+                      (title, content, bid))
         g.con.commit()
         return redirect(url_for('blog.view', bid=bid))
     else:

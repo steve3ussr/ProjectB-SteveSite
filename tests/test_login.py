@@ -159,7 +159,7 @@ def action_restore(app, client, bid, expect_res):
         assert resp.status_code in (403, 409)
 
 
-def action_edit_get(client, bid, expect_visibility):
+def action_edit_get(app, client, bid, expect_visibility):
     resp = client.get(f'/blog/{bid}/edit', follow_redirects=True)
 
     if not expect_visibility:
@@ -168,8 +168,23 @@ def action_edit_get(client, bid, expect_visibility):
 
     assert resp.status_code == 200
     soup = BeautifulSoup(resp.text, 'html.parser')
+
     mde_container = soup.select("div.EasyMDEContainer")
     assert len(mde_container) != 1
+
+    action_btn_text_set = set([btn.get('value', None) for btn in soup.select("button[type='submit']")])
+
+    with app.app_context():
+        con = db_open()
+        curr_status = con.execute('SELECT * FROM blog WHERE id = ?', (bid,)).fetchone()['status']
+    if curr_status == 'PUBLIC':
+        assert action_btn_text_set == {"publish"}
+    elif curr_status == 'DRAFT':
+        assert action_btn_text_set == {"publish", "save"}
+    elif curr_status == 'PENDING':
+        assert action_btn_text_set == {"submit", "save"}
+    else:
+        assert action_btn_text_set == set()
 
 
 def action_edit_publish(app, client, bid, expect_res):
@@ -228,67 +243,94 @@ def action_edit_save(app, client, bid, expect_res):
         assert curr_status == prev_status and curr_body == f"modified-{prev_body}" and curr_title == f"{prev_title}-modified"
 
 
+def action_edit_submit(app, client, bid, expect_res):
+    with app.app_context():
+        con = db_open()
+        _ = con.execute('SELECT * FROM blog WHERE id = ?', (bid,)).fetchone()
+        prev_status = _['status']
+        prev_body = _['body']
+        prev_title = _['title']
+
+    resp = client.post(f"/blog/{bid}/edit",
+                       follow_redirects=True,
+                       content_type='application/x-www-form-urlencoded',
+                       data=urlencode({'title': f"{prev_title}-modified",
+                                       'content': f"modified-{prev_body}",
+                                       'action': "submit"}))
+    if not expect_res:
+        assert resp.status_code in (403, 409)
+        return
+
+    assert resp.status_code == 200
+    with app.app_context():
+        con = db_open()
+        _ = con.execute('SELECT * FROM blog WHERE id = ?', (bid,)).fetchone()
+        curr_status = _['status']
+        curr_body = _['body']
+        curr_title = _['title']
+        assert curr_status == "HIDDEN" and curr_body == f"modified-{prev_body}" and curr_title == f"{prev_title}-modified"
+
 
 def get_test_res(user_level, is_author, blog_status, action):
     map_res = {
         "User": {
             True: {
-                "PUBLIC":   (1,1,0,0,0,0,1,1,0),
-                'DRAFT':    (1,1,1,0,0,0,1,1,1),
-                "PENDING":  (1,1,0,1,0,0,1,0,1),
-                "HIDDEN":   (1,1,0,0,0,0,0,0,0),
-                "DELETED":  (0,0,0,0,0,0,0,0,0),
+                "PUBLIC":   (1,1,0,0,0,0,1,1,0,0),
+                'DRAFT':    (1,1,1,0,0,0,1,1,1,0),
+                "PENDING":  (1,1,0,1,0,0,1,0,1,1),
+                "HIDDEN":   (1,1,0,0,0,0,0,0,0,0),
+                "DELETED":  (0,0,0,0,0,0,0,0,0,0),
             },
             False: {
-                "PUBLIC":   (1,0,0,0,0,0,0,0,0),
-                'DRAFT':    (0,0,0,0,0,0,0,0,0),
-                "PENDING":  (0,0,0,0,0,0,0,0,0),
-                "HIDDEN":   (0,0,0,0,0,0,0,0,0),
-                "DELETED":  (0,0,0,0,0,0,0,0,0),
+                "PUBLIC":   (1,0,0,0,0,0,0,0,0,0),
+                'DRAFT':    (0,0,0,0,0,0,0,0,0,0),
+                "PENDING":  (0,0,0,0,0,0,0,0,0,0),
+                "HIDDEN":   (0,0,0,0,0,0,0,0,0,0),
+                "DELETED":  (0,0,0,0,0,0,0,0,0,0),
             }
         },
         "Operator": {
             True: {
-                "PUBLIC":   (1,1,0,0,1,0,1,1,0),
-                'DRAFT':    (1,1,1,0,0,0,1,1,1),
-                "PENDING":  (1,1,0,1,0,0,1,0,1),
-                "HIDDEN":   (1,1,1,0,0,0,0,0,0),
-                "DELETED":  (0,0,0,0,0,0,0,0,0),
+                "PUBLIC":   (1,1,0,0,1,0,1,1,0,0),
+                'DRAFT':    (1,1,1,0,0,0,1,1,1,0),
+                "PENDING":  (1,1,0,1,0,0,1,0,1,1),
+                "HIDDEN":   (1,1,1,0,0,0,0,0,0,0),
+                "DELETED":  (0,0,0,0,0,0,0,0,0,0),
             },
             False: {
-                "PUBLIC":   (1,0,0,0,1,0,0,0,0),
-                'DRAFT':    (0,0,0,0,0,0,0,0,0),
-                "PENDING":  (0,0,0,0,0,0,0,0,0),
-                "HIDDEN":   (1,0,1,0,0,0,0,0,0),
-                "DELETED":  (0,0,0,0,0,0,0,0,0),
+                "PUBLIC":   (1,0,0,0,1,0,0,0,0,0),
+                'DRAFT':    (0,0,0,0,0,0,0,0,0,0),
+                "PENDING":  (0,0,0,0,0,0,0,0,0,0),
+                "HIDDEN":   (1,0,1,0,0,0,0,0,0,0),
+                "DELETED":  (0,0,0,0,0,0,0,0,0,0),
             }
         },
         "Admin": {
             True: {
-                "PUBLIC":   (1,1,0,0,1,0,1,1,0),
-                'DRAFT':    (1,1,1,0,0,0,1,1,1),
-                "PENDING":  (1,1,0,1,0,0,1,0,1),
-                "HIDDEN":   (1,1,1,0,0,1,0,0,0),
-                "DELETED":  (1,0,0,0,0,1,0,0,0),
+                "PUBLIC":   (1,1,0,0,1,0,1,1,0,0),
+                'DRAFT':    (1,1,1,0,0,0,1,1,1,0),
+                "PENDING":  (1,1,0,1,0,0,1,0,1,1),
+                "HIDDEN":   (1,1,1,0,0,1,0,0,0,0),
+                "DELETED":  (1,0,0,0,0,1,0,0,0,0),
             },
             False: {
-                "PUBLIC":   (1,0,0,0,1,0,0,0,0),
-                'DRAFT':    (0,0,0,0,0,0,0,0,0),
-                "PENDING":  (1,0,0,0,0,0,0,0,0),
-                "HIDDEN":   (1,0,1,0,0,1,0,0,0),
-                "DELETED":  (1,0,0,0,0,1,0,0,0),
+                "PUBLIC":   (1,0,0,0,1,0,0,0,0,0),
+                'DRAFT':    (0,0,0,0,0,0,0,0,0,0),
+                "PENDING":  (1,0,0,0,0,0,0,0,0,0),
+                "HIDDEN":   (1,0,1,0,0,1,0,0,0,0),
+                "DELETED":  (1,0,0,0,0,1,0,0,0,0),
             }
         }
     }
 
     res_array = map_res[user_level][is_author][blog_status]
     i = ['view', 'delete', 'publish', 'submit', 'hide', 'restore',
-                                    'edit-get', 'edit-publish', 'edit-save'].index(action)
+                                    'edit-get', 'edit-publish', 'edit-save', 'edit-submit'].index(action)
     return res_array[i]
 
 
 @pytest.mark.parametrize('action', ['view', 'delete', 'publish', 'submit', 'hide', 'restore',
-                                    'edit-get', 'edit-publish', 'edit-save'])
+                                    'edit-get', 'edit-publish', 'edit-save', 'edit-submit'])
 @pytest.mark.parametrize('blog_status', ['PENDING', "HIDDEN", "DRAFT", "DELETED", "PUBLIC"])
 @pytest.mark.parametrize('is_author', [True, False])
 @pytest.mark.parametrize('user_level', ["User", "Operator", "Admin"])
@@ -310,8 +352,10 @@ def test_blog_status_trans(app, get_client, get_blog, user_level, is_author, blo
     elif action == 'restore':
         action_restore(app, client, bid, expect_res)
     elif action == 'edit-get':
-        action_edit_get(client, bid, expect_res)
+        action_edit_get(app, client, bid, expect_res)
     elif action == 'edit-publish':
         action_edit_publish(app, client, bid, expect_res)
     elif action == 'edit-save':
         action_edit_save(app, client, bid, expect_res)
+    elif action == 'edit-submit':
+        action_edit_submit(app, client, bid, expect_res)
