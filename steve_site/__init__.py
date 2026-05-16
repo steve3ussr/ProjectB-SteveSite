@@ -9,14 +9,17 @@ def create_inst_path(inst_path):
         os.makedirs(inst_path)
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__, static_folder="static")
 
     # +-----------------------------+
     # |     Instance Config Map     |
     # +-----------------------------+
-    app.config.from_pyfile('config.py')
-    app.config['DB'] = os.path.join(app.instance_path, app.config['DB_FILENAME'])
+    if test_config is None:
+        app.config.from_pyfile('config.py')
+        app.config['DB'] = os.path.join(app.instance_path, app.config['DB_FILENAME'])
+    else:
+        app.config.from_mapping(test_config)
     app.otp_manager = OTPManager(app)
 
     # +-------------------------------------+

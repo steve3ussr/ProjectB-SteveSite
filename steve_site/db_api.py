@@ -44,7 +44,7 @@ def db_close(e):
 def db_create(app):
     db_path = app.config['DB']
     app.logger.debug(f'<db_create> {db_path=}')
-    if os.path.exists(db_path):
+    if os.path.exists(db_path) and not app.config.get("TEST_FORCE_CREATE_DB", None):
         app.logger.warning('Instance DB already already exists')
         return
 
