@@ -4,14 +4,9 @@
 <title>Blog</title>
 {% endblock %}
 
-{% block css %}
-    {{ super() }}
-    <link rel="stylesheet" href="/static/css/blog.css">
-{% endblock %}
-
 {% block main %}
 
-<button id="back-to-top-btn" aria-label="back-to-top"> ↑ <br>TOP</button>
+<button id="back-to-top-btn" aria-label="back-to-top"><i class="fas fa-caret-up"></i><span>TOP</span></button>
 
 <main class="blog-main-content">
 
@@ -121,5 +116,6 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="/static/js/blog.js"></script>
+    <script src="/static/js/back-to-top.js"></script>
+    <script src="/static/js/blog-list-load-more.js"></script>
 {% endblock %}

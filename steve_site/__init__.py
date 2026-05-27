@@ -21,6 +21,7 @@ def create_app(test_config=None):
     else:
         app.config.from_mapping(test_config)
     app.otp_manager = OTPManager(app)
+    # app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 10
 
     # +-------------------------------------+
     # |     Create Instance Path and DB     |

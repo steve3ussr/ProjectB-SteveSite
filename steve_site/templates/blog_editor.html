@@ -5,18 +5,18 @@
 {% endblock %}
 
 {% block main %}
-<link rel="stylesheet" href="/static/css/github-markdown-light.min.css">
-<link rel="stylesheet" href="/static/css/easymde.min.css">
-<script src="/static/js/easymde.min.js"></script>
-<link rel="stylesheet" href="/static/css/fontawesome.min.css">
-<link rel="stylesheet" href="/static/css/regular.min.css">
-<link rel="stylesheet" href="/static/css/solid.min.css">
-<link rel="stylesheet" href="/static/css/blog-editor.css">
+    <link rel="stylesheet" href="/static/vendors/easyMDE/easymde.min.css">
+    <script src="/static/vendors/easyMDE/easymde.min.js"></script>
+    <link rel="stylesheet" href="/static/vendors/font-awesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/static/vendors/font-awesome/css/regular.min.css">
+    <link rel="stylesheet" href="/static/vendors/font-awesome/css/solid.min.css">
+    <link rel="stylesheet" href="/static/vendors/github-markdown/github-markdown-light.min.css">
+
 
 <main class="blog-editor">
     <h2>编辑博文</h2>
-
-    <form action="{{ submit_href }}" method="post">
+<!--    action="{{ submit_href }}" method="post"-->
+        <form id="blog-edit-form">
         <!-- submit_href could be /blog/add or /blog/<int>/edit -->
 
         <div class="form-group">
@@ -62,6 +62,14 @@
 
     </form>
 
+    <div id="toast-msg-container" class="toast-msg-container">
+        <i id="toast-icon" class="toast-icon"></i>
+        <div id="toast-msg" class="toast-msg">
+            <span id="toast-msg-main">提示内容</span>
+            <span id="toast-msg-callback">提示内容</span>
+        </div>
+
+    </div>
 
 </main>
 <script>
@@ -105,5 +113,10 @@ const easyMDE = new EasyMDE({
     }
 });
 </script>
+{% endblock %}
 
+{% block scripts %}
+    {{ super() }}
+    <script src="/static/js/blog-action.js"></script>
+    <script src="/static/js/toast.js"></script>
 {% endblock %}

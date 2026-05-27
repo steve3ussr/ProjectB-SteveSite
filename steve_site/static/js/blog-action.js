@@ -85,66 +85,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// blog-back-to-top
+/* blog-editor form submit event */
 document.addEventListener('DOMContentLoaded', () => {
-    const backBtn = document.getElementById('back-to-top-btn');
+    const form = document.getElementById('blog-edit-form');
+    if (!form) return;
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    if (!backBtn) return;
-    window.addEventListener("scroll", () => {
-        const threshold = window.innerHeight * 0.8;
-        if (window.scrollY > threshold) backBtn.classList.add('back-to-top-btn-show');
-        else backBtn.classList.remove('back-to-top-btn-show');
-    }, {passive: true});
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        if (!event.submitter || !event.submitter.value) {
+            console.error(`Error: submit button has no action`);
+            return;
+        }
 
-    backBtn.addEventListener('click', () => {
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    });
-});
+        data['action'] = event.submitter.value;
 
-// blog-list-main-load-more
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('blog-load-more-btn');
-    const entries = document.querySelectorAll('.blog-entry');
-    if ((entries.length == 0) && (btn)) btn.style.display = "none";
+        try {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
 
-    let defaultCount = 10;
-    const step = 20;
+            const result = await response.json();
+            if (response.ok) {
+                showToast('success', result.msg, "3秒后自动跳转", ()=>{
+                    setTimeout(() => { window.location.href = result.redirect_url }, 500);
+                });
+            } else {
+                showToast("warning", `提交失败, 请重试: `, `${result.msg}`);
+            }
 
-    let currIndex = defaultCount;
-
-    const renderVisibleItems = () => {
-        entries.forEach((item, index) => {
-            if (index < currIndex) item.setAttribute('blog-visible', 'true');
-        });
-    };
-
-    renderVisibleItems();
-
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-        currIndex += step;
-        renderVisibleItems();
-        if (currIndex >= entries.length) btn.style.display = 'none';
-    });
-});
-
-function copyLinkToClipboard(btn) {
-    const currBlogLink = window.location.href;
-    const titleElement = document.querySelector('.article-title');
-    if (!titleElement) {
-        console.error("<copyLinkToClipboard> get article-title failed");
-        return;
-    }
-    const textToCopy = `标题: [${titleElement.innerText}] 链接: ${currBlogLink}`;
-
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        const bubble = document.getElementById('share-bubble');
-        bubble.classList.add('show');
-        setTimeout(() => {
-            bubble.classList.remove('show');
-        }, 1000);
-    }).catch((err) => {
-        console.error("复制链接至剪贴板失败: ", err);
-    });
-
-}
+        } catch (error) {
+            showToast("error", `请求出错: ${error}`);
+        }
+    })
+})

@@ -1,0 +1,74 @@
+#back-to-top-btn {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 70px;
+    right: -50px;
+    z-index: 100;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s ease-in-out;
+
+    border: 1px;
+    width: 50px;
+    height: 50px;
+    background-color: #8283AD;
+    color: white;
+    border-radius: 50%;
+    padding: 1px 6px 3px 6px;
+
+    text-align: center;
+}
+
+#back-to-top-btn i {
+    font-size: 18px;
+    width: 18px;
+
+    /* 💡 核心修复属性 */
+    display: inline-block;  /* 允许元素拥有独立的宽高和行高 */
+    line-height: 1;         /* 强制行高与字号等比例，防止高度塌陷 */
+    height: 18px;           /* 显式锁死高度，与宽度对齐 */
+
+    flex-shrink: 0;
+    text-align: center;
+}
+
+#back-to-top-btn.back-to-top-btn-show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-80px);
+}
+
+/*@media (max-width: 768px) {*/
+/*    #back-to-top-btn {*/
+/*        display: inline;*/
+/*        position: fixed;*/
+/*        bottom: 70px;*/
+/*        right: -50px;*/
+/*        z-index: 100;*/
+
+/*        opacity: 0;*/
+/*        visibility: hidden;*/
+/*        transition: all 0.5s ease-in-out;*/
+
+/*        border: 1px;*/
+/*        width: 50px;*/
+/*        height: 50px;*/
+/*        background-color: #8283AD;*/
+/*        color: white;*/
+/*        border-radius: 50%;*/
+/*        padding: 1px 6px 3px 6px;*/
+
+/*        text-align: center;*/
+/*    }*/
+
+/*    #back-to-top-btn.back-to-top-btn-show {*/
+/*        opacity: 1;*/
+/*        visibility: visible;*/
+/*        transform: translateX(-80px);*/
+/*    }*/
+/*}*/

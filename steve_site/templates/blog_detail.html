@@ -3,18 +3,14 @@
 {% block title %}
 <title>Blog Detail</title>
 {% endblock %}
+
 {% block css %}
     {{ super() }}
-    <link rel="stylesheet" href="/static/css/fontawesome.min.css">
-    <link rel="stylesheet" href="/static/css/regular.min.css">
-    <link rel="stylesheet" href="/static/css/solid.min.css">
-    <link rel="stylesheet" href="/static/css/github-markdown-light.min.css">
-    <link rel="stylesheet" href="/static/css/blog-detail.css">
-    <link rel="stylesheet" href="/static/css/blog.css">
+    <link rel="stylesheet" href="/static/vendors/github-markdown/github-markdown-light.min.css">
 {% endblock %}
 
 {% block main %}
-<button id="back-to-top-btn" aria-label="back-to-top"> ↑ <br>TOP</button>
+<button id="back-to-top-btn" aria-label="back-to-top"><i class="fas fa-caret-up"></i><span>TOP</span></button>
 <main class="blog-detail-wrapper">
     <div class="blog-management">
         <!-- manage_list = ['edit', 'delete', 'publishX', 'restore', 'hide', 'submitX'] -->
@@ -77,7 +73,7 @@
 
     </div>
 
-    <article>
+    <article class="blog-detail-article">
       <h1 class="article-title">
           <span>{{ blog_entry.title | safe}}</span>
           {% if blog_entry.status == "HIDDEN" %}
@@ -123,5 +119,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="/static/js/blog.js"></script>
+    <script src="/static/js/blog-copy-to-clp.js"></script>
+    <script src="/static/js/back-to-top.js"></script>
+    <script src="/static/js/blog-action.js"></script>
 {% endblock %}

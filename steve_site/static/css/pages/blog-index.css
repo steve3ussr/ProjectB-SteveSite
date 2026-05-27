@@ -131,49 +131,12 @@
     cursor: pointer;
 }
 
+/* hide this button default */
 #back-to-top-btn {
     display: none;
 }
 
-.pill-badge-index {
-    padding: 0 6px 1px 6px;
-    border-radius: 999px;
-    margin-left: 8px;
-    font-size: 12px;
 
-    vertical-align: middle;
-    white-space: nowrap;
-}
-
-.pill-badge-hidden {
-    background-color: rgb(102 103 171 / 0.33);
-    color: #000000;
-    border: 1px solid rgb(0 0 0 / 0.67);
-}
-
-.pill-badge-draft {
-    background-color: rgb(64 64 64 / 0.33);
-    color: #000000;
-    border: 1px solid rgb(64 64 64 / 0.67);
-}
-
-.pill-badge-public {
-    background-color: rgb(32 215 97);
-    color: #000000;
-    border: 1px solid rgb(0 0 0 / 0.67);
-}
-
-.pill-badge-deleted {
-    background-color: rgb(202 0 0);
-    color: #ffffff;
-    border: 1px solid rgb(112 0 0);
-}
-
-.pill-badge-pending {
-    background-color: rgb(255 117 18 / 0.86);
-    color: #ffffff;
-    border: 1px solid rgb(174 86 21 / 0.86);
-}
 
 /*
  +--------------------------------------------------+
@@ -237,33 +200,4 @@
     #blog-load-more-btn {
         display: inline;
     }
-
-    #back-to-top-btn {
-        display: inline;
-        position: fixed;
-        bottom: 70px;
-        right: -50px;
-        z-index: 100;
-
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.5s ease-in-out;
-
-        border: 1px;
-        width: 50px;
-        height: 50px;
-        background-color: #8283AD;
-        color: white;
-        border-radius: 50%;
-        padding: 1px 6px 3px 6px;
-
-        text-align: center;
-    }
-
-    #back-to-top-btn.back-to-top-btn-show {
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(-80px);
-    }
-
 }

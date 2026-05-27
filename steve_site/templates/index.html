@@ -9,11 +9,7 @@
     {% endblock %}
 
     {% block css %}
-        <link rel="stylesheet" href="/static/css/main-app-container.css">
-        <link rel="stylesheet" href="/static/css/main-header.css">
-        <link rel="stylesheet" href="/static/css/main-nav.css">
-        <link rel="stylesheet" href="/static/css/main-side-nav.css">
-        <link rel="stylesheet" href="/static/css/main-footer.css">
+        <link rel="stylesheet" href="/static/css/main.css">
     {% endblock %}
 </head>
 
@@ -75,23 +71,23 @@
     </nav>
 
     <nav>
-        <button class="side-nav-hamburger" id="side-nav-hamburger">≡</button>
+        <button class="side-nav-hamburger" id="side-nav-hamburger"><i class="fas fa-bars"></i></button>
 
         <aside class="side-nav-drawer"><ul>
             <li class="side-nav-entry-wrapper-close">
                 <div class="side-nav-entry" style="height: 80px; border-bottom: 0">
-                    <a style="padding: 0; display:block; text-align: center">返回首页</a>
+                    <a href="/" style="padding: 0; display:block; text-align: center">返回首页</a>
                 </div>
                 <div class="side-nav-entry">
                     <a></a>
-                    <button id="side-nav-close-btn">╳</button>
+                    <button id="side-nav-close-btn"><i class="fas fa-times"></i></button>
                 </div>
             </li>
 
             <li class="side-nav-entry-wrapper">
                 <div class="side-nav-entry">
                     <a>博客</a>
-                    <button>▼</button>
+                    <button><i class="fas fa-caret-down"></i></button>
                 </div>
 
                 <ul class="side-nav-sub-list">
@@ -104,7 +100,7 @@
             <li class="side-nav-entry-wrapper">
                 <div class="side-nav-entry">
                     <a>图床</a>
-                    <button>▼</button>
+                    <button><i class="fas fa-caret-down"></i></button>
                 </div>
 
                 <ul class="side-nav-sub-list">
@@ -116,7 +112,7 @@
             <li class="side-nav-entry-wrapper">
                 <div class="side-nav-entry">
                     <a>项目</a>
-                    <button>▼</button>
+                    <button><i class="fas fa-caret-down"></i></button>
                 </div>
 
                 <ul class="side-nav-sub-list">
@@ -151,7 +147,8 @@
 </body>
 
 {% block scripts %}
-<script src="/static/js/main.js"></script>
+    <script src="/static/js/nav.js"></script>
 {% endblock %}
+
 <a style="display: none" href="/honeypot"></a>
 </html>

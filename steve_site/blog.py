@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import Blueprint, render_template, request, redirect, url_for, session, abort, current_app, g
+from flask import Blueprint, render_template, request, redirect, url_for, session, abort, current_app, g, jsonify
 from steve_site.auth import force_login
 from steve_site.db_api import db_open
 import nh3
@@ -255,12 +255,18 @@ def index():
 def add():
     # GET method
     if request.method == 'GET':
-        return render_template('blog_editor.html', submit_href=url_for("blog.add"))
+        return render_template('blog_editor.html',
+                               submit_href=url_for("blog.add"),
+                               action_btn_list=['save', 'publish'])
 
     # POST method
-    title = request.form['title']
-    content = request.form['content']
-    action = request.form['action']
+    data = request.get_json()
+    current_app.logger.debug(data)
+    if not data:
+        return jsonify({"status": "error", "message": "Empty JSON"}), 500
+    title = data.get('title')
+    content = data.get('content')
+    action = data.get('action')
     if action == 'publish':
         status = 'PUBLIC'
     elif action == 'save':
@@ -276,7 +282,9 @@ def add():
                       (uid, title, content, status))
     blog_id = cur.fetchone()['id']
     g.con.commit()
-    return redirect(url_for('blog.view', bid=blog_id))
+    return jsonify({"status": "success",
+                    "redirect_url": url_for('blog.view', bid=blog_id),
+                    "msg": "提交成功喵!"}), 200
 
 
 @bp.get('/<int:bid>')
@@ -396,26 +404,35 @@ def edit(bid):
                                action_btn_list=action_btn_list)
 
     # POST method
-    title = request.form['title']
-    content = request.form['content']
-    action = request.form['action']
+    data = request.get_json()
+    current_app.logger.debug(data)
+    if not data:
+        return jsonify({"status": "error", "msg": "Empty JSON"}), 500
+    title = data.get('title')
+    content = data.get('content')
+    action = data.get('action')
 
     if action not in action_btn_list:
-        return abort(409)
+        return jsonify({"status": "error", "msg": "unknown action type"}), 409
+
+    if title.strip() == '':
+        return jsonify({"status": "error", "msg": "empty title"}), 400
 
 
     if action == 'save':
-        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP WHERE id=?", (title, content, bid))
-        g.con.commit()
-        return redirect(url_for('blog.view', bid=bid))
-    elif action == 'publish':
-        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='PUBLIC' WHERE id=?", (title, content, bid))
-        g.con.commit()
-        return redirect(url_for('blog.view', bid=bid))
-    elif action == 'submit':
-        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='HIDDEN' WHERE id=?",
+        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP "
+                      "WHERE id=?",
                       (title, content, bid))
-        g.con.commit()
-        return redirect(url_for('blog.view', bid=bid))
-    else:
-        return abort(409)
+    elif action == 'publish':
+        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='PUBLIC' "
+                      "WHERE id=?",
+                      (title, content, bid))
+    elif action == 'submit':
+        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='HIDDEN' "
+                      "WHERE id=?",
+                      (title, content, bid))
+
+    g.con.commit()
+    return jsonify({"status": "success",
+                    "redirect_url": url_for('blog.view', bid=bid),
+                    "msg": "编辑成功喵!"}), 200
