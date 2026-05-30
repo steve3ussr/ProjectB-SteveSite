@@ -10,23 +10,21 @@
 
     transform: translate(-50%, 0);
 
-    /* 现代质感设计 */
-    background-color: rgba(33, 37, 41, 0.95); /* 深色高级质感，微透明 */
+
+    background-color: rgba(33, 37, 41, 0.95);
     color: #ffffff;
     padding: 12px 22px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     font-size: 15px;
     font-weight: 500;
-    z-index: 9999; /* 确保压在全站最上层 */
+    z-index: 99;
 
-    /* 布局：让图标和文字在一行垂直居中 */
     display: flex;
     align-items: center;
     gap: 30px;
 
-    /* 动画过渡：对透明度和位移做 0.3 秒平滑过渡 */
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out, visibility 0.5s ease-in-out;
 }
 
 
@@ -41,8 +39,10 @@
     display: flex;
     flex-direction: column;
     align-items: start;
+    flex-shrink: 0;
 }
 
 .toast-icon {
     font-size: 1.5em;
+    flex-shrink: 0;
 }

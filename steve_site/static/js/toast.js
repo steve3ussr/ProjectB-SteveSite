@@ -27,18 +27,31 @@ function showToast(msg_type, msg, msg_callback, callback) {
 
     setTimeout(() => {
         toast.classList.remove('toast-show');
-        if (msg_type === "success") {
-            toastIcon.classList.remove("far", "fa-check-circle");
-        } else if (msg_type === "warning") {
-            toastIcon.classList.remove("fas", "fa-exclamation-circle");
-        } else if (msg_type === "error") {
-            toastIcon.classList.remove("far", "fa-times-circle");
-        } else {
-            return;
-        }
-        if (callback) {
-            
-            setTimeout(callback, 300);
-        }
-    }, 2500);  // toast message fade away in 2.5s
+        toast.addEventListener('transitionend', (e) => {
+            if (e.propertyName === 'opacity') {
+                if (msg_type === "success") {
+                    toastIcon.classList.remove("far", "fa-check-circle");
+                } else if (msg_type === "warning") {
+                    toastIcon.classList.remove("fas", "fa-exclamation-circle");
+                } else if (msg_type === "error") {
+                    toastIcon.classList.remove("far", "fa-times-circle");
+                }
+                if (callback) { setTimeout(callback, 500); }
+            }
+        }, {once: true})
+
+        // if (callback) {
+        //     setTimeout(callback, 500);
+        // }
+    }, 2000);  // toast message fade away in 2.5s
+    /*
+     * 0s: 触发开始动画
+     * 0.5s: 开始动画结束
+     * 2.5s: 开始执行
+     * 2.5s: 执行结束动画       执行callback(url跳转,按钮恢复动画0.5s)
+     * 3s: toast完全消失       跳转完成, 按钮恢复
+     * 3s: icon class清除
+     * 3s: 执行callback
+     * 3.5s: 按钮恢复
+     */
 }

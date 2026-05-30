@@ -33,3 +33,17 @@ input#article-title:focus, #article-title:focus-visible {
 .editor-statusbar > span.lines:before {
     content: "行数: ";
 }
+
+button[type="submit"] {
+    border-radius: 4px;
+    border: 1px solid #8b8e8f;
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+
+.btn-submit-disabled {
+    background-color: #8b8e8f !important;
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    transform: none;
+    color: #000000 !important;
+}

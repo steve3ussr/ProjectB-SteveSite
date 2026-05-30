@@ -92,14 +92,38 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
+        // make submit json
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
         if (!event.submitter || !event.submitter.value) {
             console.error(`Error: submit button has no action`);
             return;
         }
-
         data['action'] = event.submitter.value;
+
+        // 找到所有按钮, disable并且变成灰色
+        const submitBtnList = document.querySelectorAll('button[type="submit"]');
+        submitBtnList.forEach((btn) => {
+            btn.disabled = true;
+            btn.classList.add('btn-submit-disabled');
+        })
+
+        // submitter文字改变
+        const btnSubmitter = event.submitter;
+        let originalText = btnSubmitter.innerText;
+        btnSubmitter.innerText = "处理中...";
+
+        // btn recover
+        const btnRecover = () => {
+            // 恢复所有按钮
+            submitBtnList.forEach((btn) => {
+                btn.disabled = false;
+                btn.classList.remove('btn-submit-disabled');
+            })
+            // submitter文字恢复
+            btnSubmitter.innerText = originalText;
+        };
+
 
         try {
             const response = await fetch(window.location.href, {
@@ -110,15 +134,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const result = await response.json();
             if (response.ok) {
-                showToast('success', result.msg, "3秒后自动跳转", ()=>{
-                    setTimeout(() => { window.location.href = result.redirect_url }, 500);
-                });
+                showToast('success', result.msg, "3秒后自动跳转",
+                    ()=>{ btnRecover(); window.location.href = result.redirect_url });
             } else {
-                showToast("warning", `提交失败, 请重试: `, `${result.msg}`);
+                showToast("warning", `提交失败, 请重试: `, `${result.msg}`, btnRecover);
             }
 
         } catch (error) {
-            showToast("error", `请求出错: ${error}`);
+            showToast("error", `请求出错: `, `${error}`, btnRecover);
         }
+
     })
 })
