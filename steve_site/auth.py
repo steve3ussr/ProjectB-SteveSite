@@ -112,7 +112,7 @@ def register():
     # stage1: insert username
     cur = con.execute("INSERT INTO user(username, password, level) "
                       "VALUES(?, ?, ?)"
-                      "RETURNING id", (usr, pwd, level))
+                      "RETURNING id", (usr, generate_password_hash(pwd), level))
     uid = cur.fetchone()['id']
     con.commit()
 

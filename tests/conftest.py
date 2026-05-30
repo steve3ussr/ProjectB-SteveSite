@@ -78,9 +78,7 @@ def client(app):
 def client_logged_in(client):
     def _client_logged_in(username, password):
         res = client.post('/auth/login',
-                          content_type="application/x-www-form-urlencoded",
-                          data=urlencode({'username': username, 'password': password}),
-                          follow_redirects=True)
+                          json={'username': username, 'password': password})
         assert res.status_code == 200
         with client.session_transaction() as sess:
             assert sess.get('username', None) == username
