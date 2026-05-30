@@ -4,47 +4,117 @@
  +-----------------------------+
 */
 .auth-form-container {
-    background-color: #f4f4f4;
-    min-height: 35vh;
-    padding: 40px;
+    min-height: 45vh;
+    padding: 40px 0 40px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
 }
 
 .auth-form-group {
-    padding-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
     width: 300px;
 }
 
-.auth-form-group > .form-label {
+.auth-form-group label {
     margin-bottom: 5px;
     font-weight: bold;
     color: #555;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
-.auth-form-group > .form-input{
+.auth-form-group > input{
     width: 100%;
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    transition: box-shadow ease-in-out 0.3s;
+}
+
+.auth-form-group a, .auth-footer-link a{
+    text-decoration: none;
+    font-size: 0.9rem;
+    color: #0969da;
 }
 
 .auth-form-container button {
-    margin: 20px auto 0px auto;
-    display: block;
-    padding: 2px 5px;
-    background-color: #929395;
+    height: 40px;
+    width: 100%;
+    margin-top: 10px;
+    background-color: #1f883d;
     color: white;
-    border: 1px solid #6f7377;
+    border: 0;
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
-.auth-form-warning {
-    margin-top: 30px;
-    text-align: center;
-    user-select: none;
-    color: #f08103;
+.label-a-group {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.divider-container {
+    display: flex;
+    align-items: center;
+    margin: 24px auto 24px auto;
+    width: 350px;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background-color: #e0e0e0;
+}
+
+.divider-text {
+    padding: 0 16px;
+    color: #999999;
+    font-size: 14px;
+    text-transform: lowercase;
+}
+
+.auth-footer-link {
+    margin: 0 auto 0 auto;
+}
+
+.auth-warning {
+    display: none;
+    margin: 0 auto 20px auto;
+    background-color: #ffebe9;
+    border: 1px solid #ff818266;
+    width: 300px;
+    box-sizing: border-box;
+    padding: 6px 0 6px 0;
+    border-radius: 4px;
+
+    position: relative;
+    /*display: flex;*/
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-warning span {
+    font-size: 0.8rem;
+    padding: 0 40px 0 40px;
+}
+
+.auth-warning i {
+    position: absolute;
+    right: 16px;
+    color: #d1242f;
+    top: 30%;
+}
+
+.input-warning-border {
+    box-shadow: 0 0 0 1px #d1242f;
 }

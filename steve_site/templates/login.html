@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 
 {% block title %}
-<title>注册/登录</title>
+<title>登录</title>
 {% endblock %}
 
 {% block header_right %}
@@ -11,46 +11,48 @@
 {% endblock %}
 
 {% block main %}
-<div class="auth-form-container">
-    <form id="login-form" action="/auth/login" method="post">
+<div class="auth-form-container ">
+    <div class="auth-warning">
+        <span></span>
+        <i class=""></i>
+    </div>
 
+    <form id="login-form">
         <div class="auth-form-group">
             <label class="form-label" for="auth-form-username">用户名</label>
-            <input class="form-input"
-                   id="auth-form-username"
-                   type="text"
-                   {% if user_default is defined %}
-                       value="{{user_default}}"
-                   {%endif%}
-                   name="username"
-                   autocomplete="username"
-                   required
-            >
+            <input class="form-input" id="auth-form-username" type="text" name="username" autocomplete="username" required>
         </div>
 
         <div class="auth-form-group">
-            <label class="form-label" for="auth-form-password">密码</label>
-            <input class="form-input"
-                   id="auth-form-password"
-                   type="password"
-                   name="password"
-                   autocomplete="current-password"
-                   required>
+            <div class="label-a-group">
+                <label class="form-label" for="auth-form-password">密码</label>
+                <a href="/auth/reset_password">忘记密码?</a>
+            </div>
+
+            <input class="form-input" id="auth-form-password" type="password" name="password" autocomplete="current-password" required>
         </div>
 
-        <button>注册/登录</button>
-
-        <div class="auth-form-warning">
-            {% if get_flashed_messages() %}
-                <span>{{get_flashed_messages()[0]}}</span>
-            {%elif msg %}
-                <span>{{msg}}</span>
-            {% endif %}
+        <div class="auth-form-group">
+            <button type="submit">登录</button>
         </div>
 
     </form>
+
+    <div class="divider-container">
+        <span class="divider-line"></span>
+        <span class="divider-text">or</span>
+        <span class="divider-line"></span>
+    </div>
+
+    <div class="auth-footer-link">
+        <span>新用户?</span>
+        <a href="/auth/register">点击注册</a>
+    </div>
+
+
 </div>
 {% endblock %}
 
 {% block scripts %}
+    <script src="/static/js/auth.js"></script>
 {% endblock %}

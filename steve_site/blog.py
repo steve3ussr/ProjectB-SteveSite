@@ -405,12 +405,12 @@ def edit(bid):
 
     # POST method
     data = request.get_json()
-    current_app.logger.debug(data)
     if not data:
         return jsonify({"status": "error", "msg": "Empty JSON"}), 500
-    title = data.get('title')
-    content = data.get('content')
-    action = data.get('action')
+    _ = [data.get(k, None) for k in ('title', 'content', 'action')]
+    if None in _:
+        return jsonify({"status": "error", "msg": "Malformed JSON"}), 500
+    title, content, action = _
 
     if action not in action_btn_list:
         return jsonify({"status": "error", "msg": "unknown action type"}), 409

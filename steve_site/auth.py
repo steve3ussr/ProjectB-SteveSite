@@ -1,5 +1,5 @@
 import re
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, abort, current_app, jsonify
 from steve_site.db_api import db_open
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,70 +8,108 @@ from werkzeug.security import generate_password_hash, check_password_hash
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
+def verify_username(s):
+    if not re.match(r"[a-zA-Z0-9_\-@.]{3,30}", s):
+        return False, "用户名要求: 长度3-30, 并且只包含英文、数字和特殊字符_-@."
+    else:
+        return True, ""
+
+
+def verify_password(s):
+    if not re.match(r"[a-zA-Z0-9_\-@.]{6,30}", s):
+        return False, "密码要求: 长度6-30, 并且只包含英文、数字和特殊字符_-@."
+    else:
+        return True, ""
+
+
 @bp.get('/login')
 def login_get():
     return render_template('login.html')
 
 @bp.post('/login')
 def login_post():
-    usr, pwd = request.form['username'], request.form['password']
+    data = request.get_json()
+    if not data:
+        return jsonify({"status": "error", "msg": "Empty JSON"}), 400
+    _ = [data.get(k, None) for k in ('username', 'password')]
+    if None in _:
+        return jsonify({"status": "error", "msg": "Malformed JSON"}), 400
+    usr, pwd = _
 
-    # verify username: length 3-30, a-zA-Z0-9_-@.
-    if not re.match(r"[a-zA-Z0-9_\-@.]{3,30}", usr):
-        flash("用户名要求: 长度3-30, 并且只包含英文、数字和特殊字符_-@.")
-        return render_template('login.html')
+    # verify username
+    flag, reason = verify_username(usr)
+    if not flag:
+        return jsonify({"status": "warning", "msg": reason}), 400
 
     # verify password: length 6-30, a-zA-Z0-9_-@.
-    if not re.match(r"[a-zA-Z0-9_\-@.]{6,30}", pwd):
-        flash("密码要求: 长度6-30, 并且只包含英文、数字和特殊字符_-@.")
-        return render_template('login.html', user_default=usr)
+    flag, reason = verify_password(pwd)
+    if not flag:
+        return jsonify({"status": "warning", "msg": reason}), 400
 
     con = db_open()
     res = con.execute("SELECT id, username, password FROM user WHERE username=?", (usr,)).fetchone()
 
-    # case 1: new user, redirect to register
+    # case 1: user not exists
     if res is None:
-        session['register-usr'] = usr
-        session['register-pwd'] = generate_password_hash(pwd)
-        flash('看起来是位新用户！请输入邀请码')
-        session['auth-register'] = True
-        return redirect(url_for('auth.register'))
+        return jsonify({"status": "error",
+                        "msg": "用户名/密码错误"}), 400
 
-    # case 2: user exists
+    # case 2: user exists, but wrong password
     if not check_password_hash(res['password'], pwd):
-        flash("密码错误")
-        return render_template('login.html', user_default=usr)
+        return jsonify({"status": "error",
+                        "msg": "用户名/密码错误"}), 400
 
     # case 3: correct usr+pwd, login success!
     session['uid'] = res['id']
     session['username'] = res['username']
-    return redirect('/')
+    return jsonify({"status": "success",
+                    "redirect_url": url_for('resp_index'),
+                    "msg": ""}), 200
 
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
-    # abort any request except redirect from login
-    auth_token = session.get('auth-register', None)
-    if auth_token is None:
-        abort(500)
-
     # GET
     if request.method == 'GET':
         return render_template('register.html', msg=None)
 
     # extract parameters for POST
-    usr, pwd = session['register-usr'], generate_password_hash(session['register-pwd'])
-    reg_code = request.form['register-code']
+    data = request.get_json()
+    if not data:
+        return jsonify({"status": "error", "msg": "Empty JSON"}), 400
+    _ = [data.get(k, None) for k in ('username', 'password', 'password-confirm', 'register-code')]
+    current_app.logger.info(f"register-post: {_}")
+    if None in _:
+        return jsonify({"status": "error", "msg": "Malformed JSON"}), 400
+    usr, pwd, pwd_cfm, reg_code = _
 
-    # error reg code
+    # verify pwd == pwd_cfm
+    if pwd != pwd_cfm:
+        return jsonify({"status": "error", "msg": "Password disagree"}), 400
+
+    # verify username format
+    flag, reason = verify_username(usr)
+    if not flag:
+        return jsonify({"status": "warning", "msg": reason}), 400
+
+    # verify password format
+    flag, reason = verify_password(pwd)
+    if not flag:
+        return jsonify({"status": "warning", "msg": reason}), 400
+
+    # verify username is UNIQUE
+    con = db_open()
+    cur = con.execute("SELECT id FROM user WHERE username=?", (usr,)).fetchone()
+    if cur is not None:
+        return jsonify({"status": "warning", "msg": "该用户名已被占用"}), 400
+
+    # verify reg code
     level = current_app.otp_manager.verify(reg_code)
     if level is False:
-        flash('邀请码错误, 请重新输入')
-        return render_template('register.html')
+        return jsonify({"status": "error", "msg": "该邀请码不可用"}), 400
 
-    # correct reg code
-    ## stage 1: insert new user and return uid
-    con = db_open()
+
+    # stage1: insert username
     cur = con.execute("INSERT INTO user(username, password, level) "
                       "VALUES(?, ?, ?)"
                       "RETURNING id", (usr, pwd, level))
@@ -81,14 +119,10 @@ def register():
     ## stage 2: set session tokens
     session['uid'] = uid
     session['username'] = usr
-    session['user-level'] = level
     current_app.logger.info(f"user register info: {usr=}, {uid=}, {level=}")
-
-    ## stage 3: delete outdate tokens
-    session.pop('auth-register')
-    session.pop('register-usr')
-    session.pop('register-pwd')
-    return redirect('/')
+    return jsonify({"status": "success",
+                    "redirect_url": url_for('resp_index'),
+                    "msg": ""}), 200
 
 @bp.route('/logout')
 def logout():
