@@ -15,8 +15,9 @@ def create_app(test_config=None):
     # +-----------------------------+
     # |     Instance Config Map     |
     # +-----------------------------+
+    app.config.from_pyfile('config.py')
+
     if test_config is None:
-        app.config.from_pyfile('config.py')
         app.config['DB'] = os.path.join(app.instance_path, app.config['DB_FILENAME'])
     else:
         app.config.from_mapping(test_config)

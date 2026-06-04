@@ -66,7 +66,7 @@ def login_post():
     session['username'] = res['username']
     return jsonify({"status": "success",
                     "redirect_url": url_for('resp_index'),
-                    "msg": ""}), 200
+                    "msg": "登录成功! 3s后跳转"}), 200
 
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -184,12 +184,12 @@ def reset_password():
     con.commit()
 
     return jsonify({"status": "success",
-                    "redirect_url": url_for('auth.set_new_password'),
+                    "redirect_url": url_for('auth.new_password'),
                     "msg": "重置成功! 即将自动登录并跳转"}), 200
 
 
 @bp.route('/new-password', methods=['GET', 'POST'])
-def set_new_password():
+def new_password():
     if request.method == 'GET':
         return render_template('auth/new-password.html')
 
@@ -223,6 +223,13 @@ def set_new_password():
     if exp_time is None:
         return jsonify({"status": "error", "msg": "Invalid Token"}), 400
     if datetime.now(timezone.utc) > exp_time:
+        # clear session keys
+        session.pop('reset_pwd_token', None)
+
+        # clear db
+        con.execute("DELETE FROM user_modify_tmp WHERE reset_pwd_token=?", (token,))
+        con.commit()
+
         return jsonify({"status": "error",
                         "msg": "Token expired. 稍后自动跳转",
                         "redirect_url": url_for('auth.reset_password')}), 400
@@ -234,14 +241,94 @@ def set_new_password():
     username = cur['username']
     con.commit()
 
-    # stage 2: clear outdated session key
-    session.pop('reset_pwd_token', None)
-    session.pop('reset_pwd_expire_time', None)
+    # stage 2: clear db
+    con.execute("DELETE FROM user_modify_tmp WHERE reset_pwd_token=?", (token,))
+    con.commit()
 
-    # stage 3: set session keys
+    # stage 3: clear outdated session key
+    session.pop('reset_pwd_token', None)
+
+    # stage 4: set session keys
     session['uid'] = user_tmp_info.get('id')
     session['username'] = username
     current_app.logger.info(f"user register info: {session['uid']=}, {session['username']=}")
     return jsonify({"status": "success",
                     "redirect_url": url_for('resp_index'),
                     "msg": ""}), 200
+
+
+@bp.route('/renew-username', methods=['GET', 'POST'])
+@force_login
+def renew_username():
+    if request.method == 'GET':
+        return render_template('auth/renew-username.html')
+
+    # extract parameters for POST
+    data = request.get_json()
+    if not data:
+        return jsonify({"status": "error", "msg": "Empty JSON"}), 400
+    usr = data.get('username', None)
+    if usr is None:
+        return jsonify({"status": "error", "msg": "Malformed JSON"}), 400
+
+    # verify username format
+    flag, reason = verify_username(usr)
+    if not flag:
+        return jsonify({"status": "warning", "msg": reason}), 400
+
+    # verify username is UNIQUE
+    con = db_open()
+    cur = con.execute("SELECT id FROM user WHERE username=?", (usr,)).fetchone()
+    if cur is not None:
+        return jsonify({"status": "warning", "msg": "该用户名已被占用"}), 400
+
+    # verify uid
+    if session.get('uid', None) is None:
+        return jsonify({"status": "error", "msg": "uid not exists"}), 400
+
+    # change username
+    con = db_open()
+    con.execute("UPDATE user SET username=? WHERE id=?", (usr, session.get('uid')))
+    con.commit()
+    session['username'] = usr
+    return jsonify({"status": "success",
+                    "redirect_url": url_for('resp_index'),
+                    "msg": "修改成功! 即将自动登录并跳转"}), 200
+
+
+@bp.route('/renew-password', methods=['GET', 'POST'])
+@force_login
+def renew_password():
+    if request.method == 'GET':
+        return render_template('auth/renew-password.html')
+
+    # extract parameters for POST
+    data = request.get_json()
+    if not data:
+        return jsonify({"status": "error", "msg": "Empty JSON"}), 400
+    _ = [data.get(k, None) for k in ('password', 'password-confirm')]
+    if None in _:
+        return jsonify({"status": "error", "msg": "Malformed JSON"}), 400
+    pwd, pwd_cfm = _
+
+    # verify pwd == pwd_cfm
+    if pwd != pwd_cfm:
+        return jsonify({"status": "error", "msg": "Password disagree"}), 400
+
+    # verify password format
+    flag, reason = verify_password(pwd)
+    if not flag:
+        return jsonify({"status": "warning", "msg": reason}), 400
+
+    # verify uid
+    if session.get('uid', None) is None:
+        return jsonify({"status": "error", "msg": "uid not exists"}), 400
+
+    # change password
+    con = db_open()
+    con.execute("UPDATE user SET password=? WHERE id=?", (generate_password_hash(pwd), session.get('uid')))
+    con.commit()
+    return jsonify({"status": "success",
+                    "redirect_url": url_for('resp_index'),
+                    "msg": "修改成功! 即将自动登录并跳转"}), 200
+
