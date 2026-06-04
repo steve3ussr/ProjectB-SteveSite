@@ -14,6 +14,9 @@ function flashMsg(msg_type, msg) {
     } else if (msg_type === "warning") {
         warningIcon.className = "fas fa-exclamation-triangle";
         warningIcon.style.color = "#FF8B36DB";
+    } else if (msg_type === "success") {
+        warningIcon.className = "fas fa-check";
+        warningIcon.style.color = "#199f48";
     }
     warningDiv.style.display = "flex";
 }
@@ -136,6 +139,149 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(()=>{
                     btnRecover();
                     window.location.href = result.redirect_url;
+                }, 1000);
+            } else {
+                setTimeout(()=>{
+                    btnRecover();
+                    flashMsg(result.status, result.msg);
+                }, 1000);
+            }
+
+        } catch (error) {
+            setTimeout(()=>{
+                btnRecover();
+                flashMsg("error", `请求出错: ${error}`);
+                }, 1000);
+        }
+
+    })
+})
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('reset-password-form');
+    if (!form) return;
+
+    const inputPwd = document.getElementById('auth-form-password');
+    const inputPwdCfm = document.getElementById('auth-form-password-confirm');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        // make submit json
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        if (!event.submitter) {
+            console.error(`Error: missing submit button`);
+            return;
+        }
+
+        // submitter text switch
+        const btn = event.submitter;
+        let originalText = btn.innerText;
+        btn.innerText = "处理中...";
+        btn.disabled = true;
+        btn.classList.add('btn-submit-disabled');
+
+        // btn recover
+        const btnRecover = () => {
+            btn.disabled = false;
+            btn.classList.remove('btn-submit-disabled');
+            btn.innerText = originalText;
+        };
+
+
+        try {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                setTimeout(()=>{
+                    btnRecover();
+                    window.location.href = result.redirect_url;
+                }, 1000);
+            } else {
+                setTimeout(()=>{
+                    btnRecover();
+                    flashMsg(result.status, result.msg);
+                }, 1000);
+            }
+
+        } catch (error) {
+            setTimeout(()=>{
+                btnRecover();
+                flashMsg("error", `请求出错: ${error}`);
+                }, 1000);
+        }
+
+    })
+})
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('new-password-form');
+    if (!form) return;
+
+    const inputPwd = document.getElementById('auth-form-password');
+    const inputPwdCfm = document.getElementById('auth-form-password-confirm');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        // make submit json
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        if (!event.submitter) {
+            console.error(`Error: missing submit button`);
+            return;
+        }
+
+        // check password == password-confirm
+        if (data['password'] !== data['password-confirm']) {
+            flashMsg("warning", `两次输入密码不一致`);
+            inputPwd.classList.add('input-warning-border');
+            inputPwdCfm.classList.add('input-warning-border');
+            setTimeout(() => {
+                inputPwd.classList.remove('input-warning-border');
+                inputPwdCfm.classList.remove('input-warning-border');
+            }, 2000);
+            return;
+        }
+
+        // submitter text switch
+        const btn = event.submitter;
+        let originalText = btn.innerText;
+        btn.innerText = "重置密码中...";
+        btn.disabled = true;
+        btn.classList.add('btn-submit-disabled');
+
+        // btn recover
+        const btnRecover = () => {
+            btn.disabled = false;
+            btn.classList.remove('btn-submit-disabled');
+            btn.innerText = originalText;
+        };
+
+
+        try {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (Object.hasOwn(result, 'redirect_url')) {
+                setTimeout(() => {
+                    btnRecover();
+                    flashMsg(result.status, result.msg);
+                    setTimeout(() => {
+                        window.location.href = result.redirect_url
+                    }, 3000);
                 }, 1000);
             } else {
                 setTimeout(()=>{

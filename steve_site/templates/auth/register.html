@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 
 {% block title %}
-<title>登录</title>
+<title>注册</title>
 {% endblock %}
 
 {% block header_right %}
@@ -17,23 +17,29 @@
         <i class=""></i>
     </div>
 
-    <form id="login-form">
+    <form id="register-form" class="auth-form">
         <div class="auth-form-group">
             <label class="form-label" for="auth-form-username">用户名</label>
             <input class="form-input" id="auth-form-username" type="text" name="username" autocomplete="username" required>
         </div>
 
         <div class="auth-form-group">
-            <div class="label-a-group">
-                <label class="form-label" for="auth-form-password">密码</label>
-                <a href="/auth/reset_password">忘记密码?</a>
-            </div>
-
-            <input class="form-input" id="auth-form-password" type="password" name="password" autocomplete="current-password" required>
+            <label class="form-label" for="auth-form-password">密码</label>
+            <input class="form-input" id="auth-form-password" type="password" name="password" autocomplete="new-password" required>
         </div>
 
         <div class="auth-form-group">
-            <button type="submit">登录</button>
+            <label class="form-label" for="auth-form-password-confirm">确认密码</label>
+            <input class="form-input" id="auth-form-password-confirm" type="password" name="password-confirm" autocomplete="new-password" required>
+        </div>
+
+        <div class="auth-form-group">
+            <label class="form-label" for="register-code">邀请码</label>
+            <input class="form-input" id="register-code" type="text" name="register-code" required>
+        </div>
+
+        <div class="auth-form-group">
+            <button type="submit">注册</button>
         </div>
 
     </form>
@@ -45,8 +51,8 @@
     </div>
 
     <div class="auth-footer-link">
-        <span>新用户?</span>
-        <a href="/auth/register">点击注册</a>
+        <span>已有账号?</span>
+        <a href="/auth/login">点击登录</a>
     </div>
 
 

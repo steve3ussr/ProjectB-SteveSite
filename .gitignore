@@ -18,3 +18,4 @@ build/
 /dev_tools/recreate_user_blog.py
 /dev_tools/mock_image_hosting/images/
 /dev_tools/otp_generator.py
+/dev_tools/modify_dev_db.py

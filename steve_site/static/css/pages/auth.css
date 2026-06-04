@@ -4,14 +4,13 @@
  +-----------------------------+
 */
 .auth-form-container {
-    min-height: 45vh;
     padding: 40px 0 40px 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-#login-form, #register-form {
+.auth-form {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -84,7 +83,7 @@
 }
 
 .auth-footer-link {
-    margin: 0 auto 0 auto;
+    margin: 0 auto 20px auto;
 }
 
 .auth-warning {

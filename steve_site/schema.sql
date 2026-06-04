@@ -11,6 +11,13 @@ CREATE TABLE user (
   level TEXT NOT NULL
 );
 
+CREATE TABLE user_modify_tmp (
+  id INTEGER NOT NULL,
+  reset_pwd_token TEXT NOT NULL,
+  reset_pwd_expire_time TIMESTAMP NOT NULL,
+  FOREIGN KEY (id) REFERENCES user (id)
+);
+
 CREATE TABLE blog (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,

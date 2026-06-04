@@ -18,7 +18,7 @@ def datetime_sqlite2py(obj):
     """
     res = datetime.fromisoformat(obj.decode())
     res = res.astimezone()
-    return res + res.utcoffset()
+    return res  # TODO: verify blog index/detail time
 
 
 def db_open():

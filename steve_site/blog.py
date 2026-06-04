@@ -244,7 +244,7 @@ def index():
         # TODO: 使用默认策略, 按照表中ID
         pass
 
-    return render_template('blog.html',
+    return render_template('blog/blog.html',
                            blog_entry_list=blogs,
                            sidebar_default_value=sidebar_default_value)
 
@@ -255,7 +255,7 @@ def index():
 def add():
     # GET method
     if request.method == 'GET':
-        return render_template('blog_editor.html',
+        return render_template('blog/blog_editor.html',
                                submit_href=url_for("blog.add"),
                                action_btn_list=['save', 'publish'])
 
@@ -319,7 +319,7 @@ def view(bid):
     blog_detail['title'] = nh3.clean(blog_detail['title'])
 
     # edit, delete, publish, restore, hide, submit
-    return render_template('blog_detail.html',
+    return render_template('blog/blog_detail.html',
                            blog_entry=blog_detail,
                            manage_list=get_action_list(blog_detail))
 
@@ -398,7 +398,7 @@ def edit(bid):
 
     # GET method
     if request.method == 'GET':
-        return render_template('blog_editor.html',
+        return render_template('blog/blog_editor.html',
                                blog_detail=data,
                                submit_href=url_for("blog.edit", bid=bid),
                                action_btn_list=action_btn_list)
