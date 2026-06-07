@@ -1,6 +1,6 @@
 import re
 from flask import Blueprint, render_template, request, redirect, url_for, session, current_app, jsonify
-from steve_site.db_api import db_open
+from steve_site.db_api import db_open, get_redis_client
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
@@ -62,11 +62,18 @@ def login_post():
                         "msg": "用户名/密码错误"}), 400
 
     # case 3: correct usr+pwd, login success!
-    session['uid'] = res['id']
+    uid = res['id']
+    session['uid'] = uid
     session['username'] = res['username']
+
+    clear_zombie_session(uid)
+    r = get_redis_client()
+    if r and hasattr(session, 'sid'):
+        r.sadd(f"user:sessions:{uid}", session.sid)
+
     return jsonify({"status": "success",
                     "redirect_url": url_for('resp_index'),
-                    "msg": "登录成功! 3s后跳转"}), 200
+                    "msg": "登录成功! 3s后跳转"}), 200  # TODO: add timeout, modify js
 
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -128,9 +135,13 @@ def register():
 
 @bp.route('/logout')
 def logout():
-    pop_key_list = ['uid', 'username', 'history']
-    for key in pop_key_list:
-        _ = session.pop(key, None)
+    uid = session.get('uid')
+    if uid:
+        r = get_redis_client()
+        if r and hasattr(session, 'sid'):
+            r.srem(f"user:sessions:{uid}", session.sid)
+
+    session.clear()  # or pop uid, username, history
     return redirect('/')
 
 def force_login(f):
@@ -251,6 +262,7 @@ def new_password():
     # stage 4: set session keys
     session['uid'] = user_tmp_info.get('id')
     session['username'] = username
+    force_logout_other_sessions(session['uid'], session.sid)
     current_app.logger.info(f"user register info: {session['uid']=}, {session['username']=}")
     return jsonify({"status": "success",
                     "redirect_url": url_for('resp_index'),
@@ -283,14 +295,16 @@ def renew_username():
         return jsonify({"status": "warning", "msg": "该用户名已被占用"}), 400
 
     # verify uid
-    if session.get('uid', None) is None:
+    uid = session.get('uid', None)
+    if uid is None:
         return jsonify({"status": "error", "msg": "uid not exists"}), 400
 
     # change username
     con = db_open()
-    con.execute("UPDATE user SET username=? WHERE id=?", (usr, session.get('uid')))
+    con.execute("UPDATE user SET username=? WHERE id=?", (usr, uid))
     con.commit()
     session['username'] = usr
+    force_logout_other_sessions(uid, session.sid)
     return jsonify({"status": "success",
                     "redirect_url": url_for('resp_index'),
                     "msg": "修改成功! 即将自动登录并跳转"}), 200
@@ -321,14 +335,45 @@ def renew_password():
         return jsonify({"status": "warning", "msg": reason}), 400
 
     # verify uid
-    if session.get('uid', None) is None:
+    uid = session.get('uid', None)
+    if uid is None:
         return jsonify({"status": "error", "msg": "uid not exists"}), 400
 
     # change password
     con = db_open()
-    con.execute("UPDATE user SET password=? WHERE id=?", (generate_password_hash(pwd), session.get('uid')))
+    con.execute("UPDATE user SET password=? WHERE id=?", (generate_password_hash(pwd), uid))
     con.commit()
+    force_logout_other_sessions(uid, session.sid)
     return jsonify({"status": "success",
                     "redirect_url": url_for('resp_index'),
                     "msg": "修改成功! 即将自动登录并跳转"}), 200
 
+# TODO: user control panel: 只对admin开放，可以调整权限，查看统计
+
+def clear_zombie_session(uid):  # triggered when login
+    r = get_redis_client()
+    if r is None:
+        return
+
+    user_session_map = f"user:sessions:{uid}"
+    all_sids = r.smembers(user_session_map)
+
+    for sid in all_sids:
+        if not r.exists(f"session:{sid.decode()}"):
+            r.srem(user_session_map, sid)
+
+
+def force_logout_other_sessions(uid, curr_sid):  # triggered when renew-username/password, new-password
+    r = get_redis_client()
+    if r is None:
+        return
+
+    user_session_map = f"user:sessions:{uid}"
+    all_sids = r.smembers(user_session_map)
+
+    for sid in all_sids:
+        if not r.exists(f"session:{sid.decode()}"):
+            r.srem(user_session_map, sid)
+        elif sid.decode() != curr_sid:
+            r.srem(user_session_map, sid)
+            r.unlink(f"session:{sid.decode()}")

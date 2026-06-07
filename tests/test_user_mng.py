@@ -10,7 +10,6 @@ def gen_reg_code(level):
                  'User': 'SECRET_OTP_USER'}
     secret = os.getenv(map_level[level])
     assert secret is not None
-    time.sleep(3)
     reg_code = pyotp.TOTP(secret).now()
     return reg_code
 
@@ -279,3 +278,17 @@ def test_renew_password_guest(app, client):
     res = client.get('auth/renew-password')
     assert res.status_code == 302
     assert res.location == '/auth/login'
+
+
+# TODO:
+# test force_logout_other_sessions, clear_zombie_session(uid)
+#
+# force_logout_other_sessions
+# 1. 同时登录3个client, redis内容符合预期
+# 2. client1 分别触发reset-password, renew-username/password, redis内容符合预期; 观察其他clients重新访问forced_login页面是否302
+
+# clear_zombie_session
+# 0. 测试时指定session lifetime为较短的值
+# 1. 同时登录3个client, redis内容符合预期
+# 2. client1定时访问刷新session， client2-3保持不动
+# 3. 超时后 redis内容符合预期; client1触发重新登录，其他clients重新访问forced_login页面时无session

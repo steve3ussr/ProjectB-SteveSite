@@ -14,17 +14,23 @@ class OTPManager:
         if isinstance(otp, str):
             if not otp.isdigit():
                 return False
-            else:
-                otp = int(otp)
+        elif isinstance(otp, int):
+            otp = str(otp)
+        else:
+            return False
 
-        if self.otp_admin.verify(otp, valid_window=2):
+        if self.otp_admin.verify(otp, valid_window=1):
             return 'Admin'
-        elif self.otp_operator.verify(otp, valid_window=2):
+        elif self.otp_operator.verify(otp, valid_window=1):
             return 'Operator'
-        elif self.otp_user.verify(otp, valid_window=2):
+        elif self.otp_user.verify(otp, valid_window=1):
             return 'User'
         else:
             return False
+
+
+# TODO: register replay attack - insert error, unique constraint; multiple account register
+# TODO: reset-pwd replay attack - reg_code listened
 
 
 

@@ -65,6 +65,13 @@
                 <a>C2</a>
             </nav>
         </div>
+        <div class="main-nav-entry-wrapper" id="main-user-mng-wrapper">
+            <a>账号管理</a>
+            <nav class="sub-nav">
+                <a href="/auth/renew-username">更新用户名</a>
+                <a href="/auth/renew-password">更新密码</a>
+            </nav>
+        </div>
         <div class="main-nav-entry-wrapper" id="main-about-wrapper">
             <a href="/about">关于我</a>
         </div>
@@ -124,6 +131,18 @@
 
             <li class="side-nav-entry-wrapper">
                 <div class="side-nav-entry">
+                    <a>账号管理</a>
+                    <button><i class="fas fa-caret-down"></i></button>
+                </div>
+
+                <ul class="side-nav-sub-list">
+                    <li class="side-nav-sub-entry"><a href="/auth/renew-username">更新用户名</a></li>
+                    <li class="side-nav-sub-entry"><a href="/auth/renew-password">更新密码</a></li>
+                </ul>
+            </li>
+
+            <li class="side-nav-entry-wrapper">
+                <div class="side-nav-entry">
                     <a href="/about">关于我</a>
                 </div>
             </li>
@@ -142,7 +161,7 @@
 
     <footer class="site-footer">
         <p>&copy; 2025 Steve's Site</p>
-        <p style="font-style: italic; font-size: 0.7rem">An Indie Web Project by steve3ussr</p>
+        <p style="font-style: italic; font-size: 0.7rem">An Indie Web Project by <a href="https://github.com/steve3ussr">steve3ussr</a></p>
     </footer>
 
 </body>

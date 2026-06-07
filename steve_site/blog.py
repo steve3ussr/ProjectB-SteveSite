@@ -257,7 +257,8 @@ def add():
     if request.method == 'GET':
         return render_template('blog/blog_editor.html',
                                submit_href=url_for("blog.add"),
-                               action_btn_list=['save', 'publish'])
+                               action_btn_list=['save', 'publish'],
+                               unique_id=f"uid_{session.get('uid')}_blog_new")
 
     # POST method
     data = request.get_json()
@@ -285,6 +286,23 @@ def add():
     return jsonify({"status": "success",
                     "redirect_url": url_for('blog.view', bid=blog_id),
                     "msg": "提交成功喵!"}), 200
+
+# TODO
+""" 
+修正二：给“取消/返回”按钮加特效（清理幽灵草稿）
+在你的博客编辑页面，肯定有“取消”、“返回”或“丢弃”按钮。不要让用户直接跳转，而是给按钮绑定一个点击事件，主动去擦除这个特定键名的 LocalStorage：
+
+JavaScript
+// 当用户点击“放弃编写/返回”按钮时
+document.getElementById('cancel-btn').addEventListener('click', function() {
+    // 1. 如果 EasyMDE 提供了自带的内置清空方法：
+    if (easyMDE.autosave) {
+        localStorage.removeItem('smde_user_' + currentUid + '_blog_new');
+    }
+    // 2. 然后再跳转回首页
+    window.location.href = '/dashboard';
+});
+"""
 
 
 @bp.get('/<int:bid>')
@@ -401,7 +419,8 @@ def edit(bid):
         return render_template('blog/blog_editor.html',
                                blog_detail=data,
                                submit_href=url_for("blog.edit", bid=bid),
-                               action_btn_list=action_btn_list)
+                               action_btn_list=action_btn_list,
+                               unique_id=f"uid_{session.get('uid')}_blog_{bid}")
 
     # POST method
     data = request.get_json()

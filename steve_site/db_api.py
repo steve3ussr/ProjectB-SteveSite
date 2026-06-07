@@ -4,6 +4,7 @@ import click
 from flask import g, current_app, Flask
 import sqlite3
 import time
+import redis
 
 
 def factory_func(cursor, row):
@@ -65,3 +66,9 @@ def db_backup():
 def db_register(_app: Flask):
     _app.cli.add_command(db_backup)
     _app.teardown_appcontext(db_close)
+
+
+def get_redis_client():
+    if current_app.config.get("SESSION_TYPE") == 'redis':
+        return current_app.config.get('SESSION_REDIS')
+    return None
