@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, abort
 import os
+from flask_session import Session
 from steve_site import db_api, auth, blog, image
 from steve_site.otp_manager import OTPManager
 
@@ -9,20 +10,31 @@ def create_inst_path(inst_path):
         os.makedirs(inst_path)
 
 
-def create_app(test_config=None):
+def create_app(env_type=None, config=None):
     app = Flask(__name__, static_folder="static")
 
     # +-----------------------------+
     # |     Instance Config Map     |
     # +-----------------------------+
-    app.config.from_pyfile('config.py')
-
-    if test_config is None:
-        app.config['DB'] = os.path.join(app.instance_path, app.config['DB_FILENAME'])
+    if env_type is None or env_type == 'dev':
+        app.config.from_object('steve_site.config.DevConfig')
+    elif env_type == 'test':
+        app.config.from_object('steve_site.config.TestConfig')
+    elif env_type == 'prod':
+        app.config.from_object('steve_site.config.ProdConfig')
     else:
-        app.config.from_mapping(test_config)
+        raise SyntaxError(f"UNKNOWN ENV TYPE: {env_type}")
+
+    if config is not None:
+        app.config.from_mapping(config)
+
+    # determine DB at runtime
+    if 'DB' not in app.config:
+        db_filename = app.config['DB_FILENAME']
+        app.config['DB'] = os.path.join(app.instance_path, db_filename)
+
     app.otp_manager = OTPManager(app)
-    # app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 10
+    Session(app)
 
     # +-------------------------------------+
     # |     Create Instance Path and DB     |

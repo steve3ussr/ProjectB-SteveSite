@@ -1,7 +1,7 @@
 import os.path
 from datetime import datetime
 import click
-from flask import g, current_app, Flask, app
+from flask import g, current_app, Flask
 import sqlite3
 import time
 
@@ -41,15 +41,15 @@ def db_close(e):
         db.close()
 
 
-def db_create(app):
-    db_path = app.config['DB']
-    app.logger.debug(f'<db_create> {db_path=}')
-    if os.path.exists(db_path) and not app.config.get("TEST_FORCE_CREATE_DB", None):
-        app.logger.warning('Instance DB already already exists')
+def db_create(_app):
+    db_path = _app.config['DB']
+    _app.logger.debug(f'<db_create> {db_path=}')
+    if os.path.exists(db_path):
+        _app.logger.warning('Instance DB already already exists')
         return
 
-    app.logger.info('Create new instance DB')
-    with app.open_resource("schema.sql") as f:
+    _app.logger.info('Create new instance DB')
+    with _app.open_resource("schema.sql") as f:
         con = sqlite3.connect(db_path)
         con.executescript(f.read().decode('utf8'))
         con.close()
@@ -62,6 +62,6 @@ def db_backup():
     src.backup(dst)
     dst.close()
 
-def db_register(app: Flask):
-    app.cli.add_command(db_backup)
-    app.teardown_appcontext(db_close)
+def db_register(_app: Flask):
+    _app.cli.add_command(db_backup)
+    _app.teardown_appcontext(db_close)

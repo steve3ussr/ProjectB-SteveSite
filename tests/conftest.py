@@ -1,6 +1,7 @@
 import os
+import shutil
 import tempfile
-from urllib.parse import urlencode
+import uuid
 import pytest
 import steve_site
 from steve_site.db_api import db_open
@@ -45,11 +46,18 @@ def blog_info():
 
 
 @pytest.fixture
-def app(user_info, blog_info):
-    db_fd, db_path = tempfile.mkstemp()
-    app = steve_site.create_app(test_config={'DB': db_path,
-                                             'SECRET_KEY': os.urandom(24),
-                                             'TEST_FORCE_CREATE_DB': True})
+def app(user_info, blog_info, tmp_path_factory):
+    # tmp SQLite
+    tmp_dir = tempfile.gettempdir()
+    tmp_filename = f"{uuid.uuid4().hex}.db"
+    tmp_file = os.path.join(tmp_dir, tmp_filename)
+
+    # tmp redis-like session
+    temp_session_dir = tmp_path_factory.mktemp('flask_session_cache')
+    temp_session_dir_path = str(temp_session_dir)
+
+    app = steve_site.create_app(env_type='test', config={'DB': tmp_file,
+                                                         'SESSION_FILE_DIR': temp_session_dir_path})
 
     with app.app_context():
         con = db_open()
@@ -66,8 +74,10 @@ def app(user_info, blog_info):
         con.commit()
     yield app
 
-    os.close(db_fd)
-    os.unlink(db_path)
+    # clear tmp SQLite and tmp redis-like session file
+    os.remove(tmp_file)
+    if os.path.exists(temp_session_dir_path):
+        shutil.rmtree(temp_session_dir_path)
 
 
 @pytest.fixture

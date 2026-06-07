@@ -15,8 +15,6 @@ build/
 *.egg-info/
 
 /.idea/
-/dev_tools/recreate_user_blog.py
-/dev_tools/mock_image_hosting/images/
-/dev_tools/otp_generator.py
-/dev_tools/modify_dev_db.py
-/dev_tools/redis_cli
+
+/dev_tools/*
+!/dev_tools/mock_image_hosting/app.py
