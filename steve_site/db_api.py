@@ -46,7 +46,7 @@ def db_create(_app):
     db_path = _app.config['DB']
     _app.logger.debug(f'<db_create> {db_path=}')
     if os.path.exists(db_path):
-        _app.logger.warning('Instance DB already already exists')
+        _app.logger.warning(f'Instance DB already already exists: {db_path=}')
         return
 
     _app.logger.info('Create new instance DB')

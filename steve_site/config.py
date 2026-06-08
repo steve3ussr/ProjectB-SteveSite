@@ -20,19 +20,21 @@ class BaseConfig:
 
 class RedisConfig:
     SESSION_TYPE = 'redis'
-    REDIS_URL = os.getenv('REDIS_URL')
-    SESSION_REDIS = redis.Redis.from_url(REDIS_URL)
+    REDIS_DB_NUM = 0
 
 
 class DevConfig(BaseConfig, RedisConfig):
     DB_FILENAME = 'inst_runtime.db'
+    REDIS_BASE_URL = os.getenv('REDIS_URL_DEV')
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=15)
 
 class ProdConfig(BaseConfig, RedisConfig):
     DB_FILENAME = 'inst.db'
+    REDIS_BASE_URL = os.getenv('REDIS_URL_PROD')
 
 
-class TestConfig(BaseConfig):
-    SESSION_TYPE = 'filesystem'
-    # MISSING: SESSION_FILE_DIR
-    # MISING:  DB
+class TestConfig(BaseConfig, RedisConfig):
+    # MISSING SQL DB: injected by pytest conftest
+    REDIS_BASE_URL = os.getenv('REDIS_URL_TEST')
+    # REDIS DB NUM: injected by pytest conftest
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=3)

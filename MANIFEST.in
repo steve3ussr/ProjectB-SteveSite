@@ -1,0 +1,3 @@
+graft steve_site
+global-exclude *.pyc
+global-exclude __pycache__

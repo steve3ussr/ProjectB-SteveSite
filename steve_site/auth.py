@@ -225,8 +225,10 @@ def new_password():
     # verify session token, get username
     con = db_open()
     token = session.get('reset_pwd_token', '')
+    if token == '':
+        return jsonify({"status": "error", "msg": "Invalid session. "}), 400
     user_tmp_info = con.execute("SELECT * FROM user_modify_tmp WHERE reset_pwd_token=?", (token,)).fetchone()
-    if token is None or user_tmp_info is None:
+    if user_tmp_info is None:
         return jsonify({"status": "error", "msg": "Invalid Token"}), 400
 
     # verify token expire

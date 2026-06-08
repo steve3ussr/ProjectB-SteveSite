@@ -1,3 +1,4 @@
+import redis
 from flask import Flask, render_template, request, abort
 import os
 from flask_session import Session
@@ -32,6 +33,10 @@ def create_app(env_type=None, config=None):
     if 'DB' not in app.config:
         db_filename = app.config['DB_FILENAME']
         app.config['DB'] = os.path.join(app.instance_path, db_filename)
+
+    # determine Redis DB at runtime
+    url = f"{app.config['REDIS_BASE_URL']}/{app.config['REDIS_DB_NUM']}"
+    app.config['SESSION_REDIS'] = redis.Redis.from_url(url)
 
     app.otp_manager = OTPManager(app)
     Session(app)

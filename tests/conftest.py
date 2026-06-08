@@ -1,14 +1,18 @@
 import os
-import shutil
 import tempfile
 import uuid
 import pytest
+from dotenv import load_dotenv
 import steve_site
 from steve_site.db_api import db_open
 from werkzeug.security import generate_password_hash
+from tests.client_actor import ClientActor
 
 
-@pytest.fixture
+load_dotenv()
+
+
+@pytest.fixture(scope="session")
 def user_info():
     user_list = [("user1", "password123user1", "User"),
                  ("user2", "password123user2", "User"),
@@ -22,7 +26,7 @@ def user_info():
     return res
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def blog_info():
     blog_list = [(1, "User-PUBLIC", "", "PUBLIC"),
                  (1, "User-DRAFT", "", "DRAFT"),
@@ -45,52 +49,71 @@ def blog_info():
     return res
 
 
-@pytest.fixture
-def app(user_info, blog_info, tmp_path_factory):
-    # tmp SQLite
+@pytest.fixture(scope="session")
+def app(assign_sql_filepath, assign_redis_db_num):
+    app = steve_site.create_app(env_type='test', config={'DB': assign_sql_filepath,
+                                                         'REDIS_DB_NUM': assign_redis_db_num})
+    app.test_client_class = ClientActor
+    return app
+
+
+@pytest.fixture(scope="session")
+def assign_redis_db_num():
+    worker_id = os.environ.get('PYTEST_XDIST_WORKER')
+    if worker_id and worker_id != 'master':
+        db_num = int(worker_id.replace('gw', ''))
+    else:
+        db_num = 0
+    return db_num
+
+
+@pytest.fixture(scope="session")
+def assign_sql_filepath():
     tmp_dir = tempfile.gettempdir()
     tmp_filename = f"{uuid.uuid4().hex}.db"
     tmp_file = os.path.join(tmp_dir, tmp_filename)
 
-    # tmp redis-like session
-    temp_session_dir = tmp_path_factory.mktemp('flask_session_cache')
-    temp_session_dir_path = str(temp_session_dir)
+    yield tmp_file
 
-    app = steve_site.create_app(env_type='test', config={'DB': tmp_file,
-                                                         'SESSION_FILE_DIR': temp_session_dir_path})
-
-    with app.app_context():
-        con = db_open()
-        lst = [(info['username'],
-                generate_password_hash(info['password']),
-                info['level']) for info in user_info.values()]
-        con.executemany("INSERT INTO user (username, password, level) VALUES (?, ?, ?)", lst)
-
-        lst = [(info['author_id'],
-                info['title'],
-                info['body'],
-                info['status']) for info in blog_info.values()]
-        con.executemany("INSERT INTO blog (author_id, title, body, status) VALUES (?, ?, ?, ?)", lst)
-        con.commit()
-    yield app
-
-    # clear tmp SQLite and tmp redis-like session file
     os.remove(tmp_file)
-    if os.path.exists(temp_session_dir_path):
-        shutil.rmtree(temp_session_dir_path)
 
 
-@pytest.fixture
-def client(app):
-    return app.test_client()
+@pytest.fixture(scope="function", autouse=True)
+def flush_redis(app, assign_redis_db_num):
+    r = app.config['SESSION_REDIS']
+    r.flushdb()
+    yield
+    r.flushdb()
 
-@pytest.fixture
-def client_logged_in(client):
-    def _client_logged_in(username, password):
-        res = client.post('/auth/login',
-                          json={'username': username, 'password': password})
-        assert res.status_code == 200
-        with client.session_transaction() as sess:
-            assert sess.get('username', None) == username
-        return client
-    return _client_logged_in
+
+@pytest.fixture(scope="function", autouse=True)
+def flush_sql(app, user_info, blog_info):
+    def _truncate():
+        table_list = ['user', 'blog', 'user_modify_tmp']
+        with app.app_context():
+            con = db_open()
+            for table in table_list:
+                con.execute(f"DELETE FROM {table}")
+            for table in table_list:
+                con.execute(f"DELETE FROM sqlite_sequence WHERE name='{table}'")
+            con.commit()
+
+    def _rebuild():
+        with app.app_context():
+            con = db_open()
+            lst = [(info['username'],
+                    generate_password_hash(info['password']),
+                    info['level']) for info in user_info.values()]
+            con.executemany("INSERT INTO user (username, password, level) VALUES (?, ?, ?)", lst)
+
+            lst = [(info['author_id'],
+                    info['title'],
+                    info['body'],
+                    info['status']) for info in blog_info.values()]
+            con.executemany("INSERT INTO blog (author_id, title, body, status) VALUES (?, ?, ?, ?)", lst)
+            con.commit()
+
+    _truncate()
+    _rebuild()
+    yield
+    _truncate()
