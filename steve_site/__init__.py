@@ -11,17 +11,17 @@ def create_inst_path(inst_path):
         os.makedirs(inst_path)
 
 
-def create_app(env_type=None, config=None):
+def create_app(*args, env_type=None, config=None):
     app = Flask(__name__, static_folder="static")
 
     # +-----------------------------+
     # |     Instance Config Map     |
     # +-----------------------------+
-    if env_type is None or env_type == 'dev':
+    if env_type == 'dev':
         app.config.from_object('steve_site.config.DevConfig')
     elif env_type == 'test':
         app.config.from_object('steve_site.config.TestConfig')
-    elif env_type == 'prod':
+    elif env_type is None or env_type == 'prod':
         app.config.from_object('steve_site.config.ProdConfig')
     else:
         raise SyntaxError(f"UNKNOWN ENV TYPE: {env_type}")
