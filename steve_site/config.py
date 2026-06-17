@@ -27,10 +27,12 @@ class DevConfig(BaseConfig, RedisConfig):
     DB_FILENAME = 'inst_runtime.db'
     REDIS_BASE_URL = os.getenv('REDIS_URL_DEV')
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=15)
+    LOG_DIR = "logs"
 
 class ProdConfig(BaseConfig, RedisConfig):
     DB_FILENAME = 'inst.db'
     REDIS_BASE_URL = os.getenv('REDIS_URL_PROD')
+    LOG_DIR = "/app/logs"
 
 
 class TestConfig(BaseConfig, RedisConfig):

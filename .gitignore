@@ -19,3 +19,4 @@ build/
 
 /dev_tools/*
 !/dev_tools/mock_image_hosting/app.py
+/deploy_tools/*

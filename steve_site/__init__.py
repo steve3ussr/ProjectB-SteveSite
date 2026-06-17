@@ -1,6 +1,10 @@
+import time
+from logging.handlers import RotatingFileHandler
 import redis
 from flask import Flask, render_template, request, abort
 import os
+import sys
+import logging
 from flask_session import Session
 from steve_site import db_api, auth, blog, image
 from steve_site.otp_manager import OTPManager
@@ -11,23 +15,68 @@ def create_inst_path(inst_path):
         os.makedirs(inst_path)
 
 
+def modify_logger_for_prod(app):
+    #
+    log_formatter = logging.Formatter('[%(asctime)s] %(levelname)-7s in %(filename)s (%(funcName)s:%(lineno)d): %(message)s')
+
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(log_formatter)
+    stream_handler.setLevel(logging.INFO)
+
+    log_dir = os.path.join(app.instance_path, app.config['LOG_DIR'])
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    file_handler = RotatingFileHandler(os.path.join(log_dir, f"{time.strftime('%Y%m%d-%H%M%S')}.log"),
+                                       maxBytes=20 * 1024 * 1024,
+                                       backupCount=5)
+    file_handler.setFormatter(log_formatter)
+    file_handler.setLevel(logging.WARNING)
+
+    logging.getLogger('flask.app').setLevel(logging.INFO)
+    logging.getLogger('waitress.queue').setLevel(logging.ERROR)
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.handlers = []
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(stream_handler)
+    app.logger.handlers = []
+
+    app.logger.warning(f"{log_dir=}")
+
+
 def create_app(*args, env_type=None, config=None):
     app = Flask(__name__, static_folder="static")
 
     # +-----------------------------+
     # |     Instance Config Map     |
     # +-----------------------------+
-    if env_type == 'dev':
+    if app.config['DEBUG']:
         app.config.from_object('steve_site.config.DevConfig')
-    elif env_type == 'test':
+    elif env_type == 'test' or app.config['TESTING']:
         app.config.from_object('steve_site.config.TestConfig')
-    elif env_type is None or env_type == 'prod':
-        app.config.from_object('steve_site.config.ProdConfig')
+        app.config['TESTING'] = True
     else:
-        raise SyntaxError(f"UNKNOWN ENV TYPE: {env_type}")
-
+        app.config.from_object('steve_site.config.ProdConfig')
     if config is not None:
         app.config.from_mapping(config)
+
+    # +-------------+
+    # |     LOG     |
+    # +-------------+
+
+    if app.config['TESTING']:
+        pass
+    elif app.config['DEBUG']:
+        # modify_logger_for_prod(app)
+        pass
+    else:
+        modify_logger_for_prod(app)
+
+    # +-------------------+
+    # |     SQLite DB     |
+    # +-------------------+
+
 
     # determine DB at runtime
     if 'DB' not in app.config:
@@ -112,6 +161,15 @@ def create_app(*args, env_type=None, config=None):
         for keyword in keywords:
             if keyword in ua:
                 abort(418)
+
+    # +--------------------------------+
+    # |     Cache Static Resources     |
+    # +--------------------------------+
+    @app.after_request
+    def cache_static_resources(response):
+        if request.path.startswith('/static/'):
+            response.headers['Cache-Control'] = 'no-cache'
+        return response
 
     # +--------------------+
     # |     Index View     |
