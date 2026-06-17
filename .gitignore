@@ -19,4 +19,12 @@ build/
 
 /dev_tools/*
 !/dev_tools/mock_image_hosting/app.py
-/deploy_tools/*
+!/dev_tools/otp_generator.py
+!/dev_tools/con_redis.py
+
+
+/deploy_tools/.env
+/deploy_tools/nginx.conf
+/deploy_tools/docker-compose.yml
+/deploy_tools/deploy.sh
+

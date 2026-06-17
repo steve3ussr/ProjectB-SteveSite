@@ -1,0 +1,111 @@
+#!/bin/bash
+
+WEB_SERVICE="web"
+REDIS_SERVICE="redis"
+NGINX_SERVICE="nginx"
+FLAG_SKIP_LOG_CONFIRM=0
+
+echo -e "    ======= 操作列表 =======\n
+[1] 远程更新源代码 + build + 部署
+[2] 本地更新源代码 + build + 部署
+[3] 更改 nginx.conf, 重新加载配置
+[4] 更改 docker-compose.yml, 重新部署
+[5] 更改 .env 文件, 仅重启 web 服务
+[6] 查看实时log
+
+按其他任意键退出
+"
+read -n 1 -p "请选择[1-6]: " option
+echo ""
+
+case ${option} in
+    [12])
+        if [ ${option} -eq 1 ]; then
+            echo "正在尝试 git pull"
+            git pull
+            if [ $? -ne 0 ]; then
+                echo -e "git pull 失败, 请检查网络或者配置;\n如冲突可选 git stash 暂存本地更改/ git reset --hard 强行使用远程代码"
+                exit 1
+            fi
+            echo -e "git pull 成功\n开始 build docker 镜像并启动"
+        fi
+
+        docker compose up -d --build
+        if [ $? -ne 0 ]; then
+            echo "docker build/up 失败, 请检查配置"
+            exit 1
+        fi
+        echo "部署成功"
+        ;;
+
+    3)
+        docker compose exec ${NGINX_SERVICE} nginx -s reload
+        if [ $? -ne 0 ]; then
+            echo "reload 配置失败, 请检查配置文件"
+            exit 1
+        fi
+        echo "reload 配置成功"
+        ;;
+
+    4)
+        docker compose up -d
+        if [ $? -ne 0 ]; then
+            echo "docker 重部署失败, 请检查配置文件"
+            exit 1
+        fi
+        ;;
+
+    5)
+        docker compose up -d --no-deps ${WEB_SERVICE}
+        if [ $? -ne 0 ]; then
+            echo "${WEB_SERVICE} 容器重新启动失败, 请检查配置"
+            exit 1
+        fi
+        echo "${WEB_SERVICE} 容器重新启动"
+        ;;
+
+    6)
+        FLAG_SKIP_LOG_CONFIRM=1
+        ;;
+    *)
+        exit 0
+        ;;
+esac
+
+WEB_ID=$(docker ps -q --filter "name=${WEB_SERVICE}")
+REDIS_ID=$(docker ps -q --filter "name=^/${REDIS_SERVICE}")
+NGINX_ID=$(docker ps -q --filter "name=${NGINX_SERVICE}")
+
+if [ -n "${WEB_ID}" ]; then
+    echo "${WEB_SERVICE}容器ID: ${WEB_ID}"
+else
+    echo "获取${WEB_SERVICE}容器ID失败"
+fi
+
+if [ -n "${REDIS_ID}" ]; then
+    echo "${REDIS_SERVICE}容器ID: ${REDIS_ID}"
+else
+    echo "获取${REDIS_SERVICE}容器ID失败"
+fi
+
+if [ -n "${NGINX_ID}" ]; then
+    echo "${NGINX_SERVICE}容器ID: ${NGINX_ID}"
+else
+    echo "获取${NGINX_SERVICE}容器ID失败"
+fi
+
+
+if [ ${FLAG_SKIP_LOG_CONFIRM} -eq 0 ]; then
+    read -n 1 -p "是否现在查看网站${WEB_SERVICE}实时日志[y/N]: " choice
+    echo ""
+    case "${choice}" in
+        [yY])
+            ;;
+        *)
+            echo "操作完成"
+            exit 0
+            ;;
+    esac
+fi
+
+docker logs -f --tail 100 "${WEB_SERVICE}"

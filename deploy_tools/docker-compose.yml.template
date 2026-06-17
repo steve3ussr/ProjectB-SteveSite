@@ -1,0 +1,40 @@
+services:
+
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+
+  web:
+
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: web
+    container_name: web
+    volumes:
+      - ../data:/usr/local/var/web-instance
+      - ../data/logs:/app/logs
+    env_file:
+      - ../.env
+    deploy:
+      update_config:
+        order: start-first
+
+  redis:
+    image: redis
+    container_name: redis-session
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: always
+    command: redis-server --appendonly yes --requirepass "qwe"
+    volumes:
+      - my_redis_vol:/data
+
+volumes:
+  my_redis_vol:
+  
