@@ -13,7 +13,7 @@
     <div class="content-wrapper">
 
         <section class="sidebar">
-            <form action="/blog/", method="GET">
+            <form action="/blog/" method="GET">
                 <div class="filter-group">
                     <label for="blog-index-sort">显示排序:</label>
                     <select id="blog-index-sort" name="sort">
@@ -90,11 +90,11 @@
                                 </time>
                             </div>
                         </div>
-
-                        <a href="{{ url_for('blog.view', bid=blog_entry.id) }}"  class="intro">
-                            <p style="word-break: break-all">
-                            {{ blog_entry.body }}
-                            </p>
+                        <a class="blog-content" href="{{ url_for('blog.view', bid=blog_entry.id) }}">
+                            <p class="blog-content-intro">{{ blog_entry.body }}</p>
+                            {% if blog_entry.cover_url %}
+                            <img class="blog-thumb" src="{{ blog_entry.cover_url }}">
+                            {% endif %}
                         </a>
                     </article>
 

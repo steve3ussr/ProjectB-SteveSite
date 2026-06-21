@@ -1,10 +1,11 @@
 from functools import wraps
-
+import re
 from flask import Blueprint, render_template, request, redirect, url_for, session, abort, current_app, g, jsonify
 from steve_site.auth import force_login
 from steve_site.db_api import db_open
 import nh3
 import mistune
+from urllib.parse import urlparse
 
 
 markdown_converter = mistune.create_markdown(plugins=['strikethrough', 'table', 'task_lists', 'mark', 'math', 'spoiler'],
@@ -12,7 +13,7 @@ markdown_converter = mistune.create_markdown(plugins=['strikethrough', 'table', 
 bp = Blueprint('blog', __name__, url_prefix='/blog')
 
 
-nh3_allowed_tags = nh3.ALLOWED_TAGS | {"input", }
+nh3_allowed_tags = nh3.ALLOWED_TAGS | {"input", "img"}
 nh3_allowed_attributes = {
     "li": {"class"},
     "input": {
@@ -20,6 +21,10 @@ nh3_allowed_attributes = {
         "type",
         "disabled",
         "checked"
+    },
+    "img": {
+        "src",
+        "alt"
     }
 }
 
@@ -277,10 +282,11 @@ def add():
 
     uid = session.get('uid')
     g.con = db_open()
-    cur = g.con.execute("INSERT INTO blog (author_id, title, body, status) "
-                      "VALUES (?, ?, ?, ?) "
+    cover_url = extract_cover_url(content)
+    cur = g.con.execute("INSERT INTO blog (author_id, title, body, status, cover_url) "
+                      "VALUES (?, ?, ?, ?, ?) "
                       "RETURNING id",
-                      (uid, title, content, status))
+                      (uid, title, content, status, cover_url))
     blog_id = cur.fetchone()['id']
     g.con.commit()
     return jsonify({"status": "success",
@@ -430,28 +436,69 @@ def edit(bid):
     if None in _:
         return jsonify({"status": "error", "msg": "Malformed JSON"}), 500
     title, content, action = _
-
+    current_app.logger.info(f"{title=}, {content=}, {action=}")
     if action not in action_btn_list:
         return jsonify({"status": "error", "msg": "unknown action type"}), 409
 
     if title.strip() == '':
         return jsonify({"status": "error", "msg": "empty title"}), 400
 
-
+    cover_url = extract_cover_url(content)
     if action == 'save':
-        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP "
+        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, cover_url=?"
                       "WHERE id=?",
-                      (title, content, bid))
+                      (title, content, cover_url, bid))
     elif action == 'publish':
-        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='PUBLIC' "
+        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='PUBLIC', cover_url=?"
                       "WHERE id=?",
-                      (title, content, bid))
+                      (title, content, cover_url, bid))
     elif action == 'submit':
-        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='HIDDEN' "
+        g.con.execute("UPDATE blog SET title=?, body=?, edited=CURRENT_TIMESTAMP, status='HIDDEN', cover_url=?"
                       "WHERE id=?",
-                      (title, content, bid))
+                      (title, content, cover_url, bid))
 
     g.con.commit()
     return jsonify({"status": "success",
                     "redirect_url": url_for('blog.view', bid=bid),
                     "msg": "编辑成功喵!"}), 200
+
+
+def extract_cover_url(body):
+    R2_CUSTOM_DOMAIN = current_app.config['R2_CUSTOM_DOMAIN']
+
+    # get first ![](<url>) as cover
+    url_list = re.findall(r"!\[.*\]\((?P<url>.+)\)", body)
+    if not url_list:
+        return ''
+
+    for url in url_list[:5]:
+        # verify URL valid
+        try:
+            parse_res = urlparse(url)
+            if parse_res.scheme not in ('http', 'https') or not parse_res.netloc:
+                continue
+            if any(char in parse_res.netloc for char in (' ', '\n', '\r', '\t')):
+                continue
+
+        except Exception as e:
+            current_app.logger.info(f'{e=}')
+            continue
+
+        # check if url is from my R2 bucket
+        res = re.match(R2_CUSTOM_DOMAIN + r"/\d+/\d{4}/\d{2}/(?P<image_uuid>.{8})_(?P<image_type>(thumb|small|large)).webp",
+                       url)
+        if not res:
+            return url
+
+        # check exists in DB; if uuid exists, try to replace large/small with thumb
+        uuid = res.group('image_uuid')
+        thumb_type = res.group('image_type')
+        res = g.con.execute("SELECT * FROM image WHERE uuid = ? AND status = 'NORMAL'", (uuid,)).fetchone()
+        if not res:
+            continue
+        if thumb_type not in res['url_and_size']:
+            continue
+        else:
+            return res['url_and_size']['thumb']['url']  # valid URL, return thumb url
+
+    return ''

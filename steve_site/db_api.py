@@ -1,10 +1,10 @@
+import json
 import os.path
 from datetime import datetime
 import click
 from flask import g, current_app, Flask
 import sqlite3
 import time
-import redis
 
 
 def factory_func(cursor, row):
@@ -31,6 +31,8 @@ def db_open():
         raise OSError('try to open a missing db file')
 
     sqlite3.register_converter('TIMESTAMP', datetime_sqlite2py)
+    sqlite3.register_adapter(dict, json.dumps)
+    sqlite3.register_converter("JSON", json.loads)
     g.db = sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES)
     g.db.row_factory = factory_func
     return g.db

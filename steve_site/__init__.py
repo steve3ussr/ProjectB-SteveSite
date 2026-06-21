@@ -1,6 +1,8 @@
 import time
 from logging.handlers import RotatingFileHandler
+import boto3
 import redis
+from botocore.config import Config
 from flask import Flask, render_template, request, abort
 import os
 import sys
@@ -89,6 +91,16 @@ def create_app(*args, env_type=None, config=None):
 
     app.otp_manager = OTPManager(app)
     Session(app)
+
+    # +-----------------+
+    # |     R2 (S3)     |
+    # +-----------------+
+    app.r2_client = boto3.client(
+        service_name='s3',
+        endpoint_url=f'https://{os.getenv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com',
+        aws_access_key_id=os.getenv('R2_ACCESS_KEY_ID'),
+        aws_secret_access_key=os.getenv('R2_SECRET_ACCESS_KEY'),
+        config=Config(signature_version='s3v4'))
 
     # +-------------------------------------+
     # |     Create Instance Path and DB     |

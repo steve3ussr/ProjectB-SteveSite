@@ -71,6 +71,12 @@
 
     </div>
 
+    <div id="blog-upload-overlay" class="blog-upload-overlay" style="">
+        <div class="blog-upload-spinner"></div>
+        <div class="blog-upload-text">正在压缩并上传图片, 请稍候...</div>
+        <div class="blog-upload-text"><span style="font-style: italic">存储服务器在海外, 所以上传比较慢</span>😥</div>
+    </div>
+
 </main>
 <script>
 const easyMDE = new EasyMDE({
@@ -82,34 +88,85 @@ const easyMDE = new EasyMDE({
     toolbar: ["clean-block", "bold", "italic", "strikethrough", "heading", "|", "unordered-list", "ordered-list",  "check-list", "|", "quote", "code", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen"],
     imageTexts: {sbInit: "可通过拖放或从剪贴板粘贴来添加图片"},
 
-    // 核心配置：自定义上传
     uploadImage: true,
     imageUploadFunction: function(file, onSuccess, onError) {
-        // 创建 FormData 用于发送文件
-        const formData = new FormData();
-        formData.append('image', file);
+        const overlay = document.getElementById('blog-upload-overlay');
+        overlay.style.display = 'flex';
 
-        // 调用你的 Flask 图床接口
-        fetch('/image/post', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.large) {
-                // 关键点：调用 onSuccess 会自动在编辑器光标处插入 ![description](url)
-                onSuccess(data.large);
-            } else if (data.medium) {
-                onSuccess(data.medium);
-            } else if (data.original) {
-                onSuccess(data.original);
-            } else if (data.error) {
-                onError(data.error);
-            } else {
-                onError("上传失败");
+        // step 1: block > 15MB
+        const maxSizeInBytes = 15 * 1024 * 1024;
+        if (file.size > maxSizeInBytes) {
+            onError("上传失败：图片大小超过 15MB 限制 ");
+            overlay.style.display = 'none';
+            return;
+        }
+
+        // step 2: block > 20MP
+        const maxPixels = 20000000;
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+
+        img.onload = function() {
+            const width = img.width;
+            const height = img.height;
+            const totalPixels = width * height;
+            URL.revokeObjectURL(objectUrl);
+
+            if (totalPixels > maxPixels) {
+                onError(`上传失败：图片分辨率超过 20MP 限制. 如果是超长截图, 建议将其裁剪拆分为 2-3 张图片分别上传, 这样阅读体验会更好哦!`);
+                overlay.style.display = 'none';
+                return;
             }
-        })
-        .catch(err => onError("网络错误"));
+
+            uploadFile(file);
+        };
+
+        // step 3: block non-image
+        img.onerror = function() {
+            URL.revokeObjectURL(objectUrl);
+            onError("上传失败：文件不是合法的图片格式! ");
+            overlay.style.display = 'none';
+        };
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            // WARNING: fetch is async, be careful!
+            fetch('/image/post', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                var url = "";
+                if (data.large) {
+                    url = data.large.url;
+                } else if (data.small) {
+                    url = data.small.url;
+                } else if (data.thumb) {
+                    url = data.large.url;
+                } else if (data.error) {
+                    onError(data.error);
+                    overlay.style.display = 'none';
+                    return;
+                } else {
+                    onError("上传失败");
+                    overlay.style.display = 'none';
+                    return;
+                }
+
+                onSuccess(url);
+                overlay.style.display = 'none';
+            })
+            .catch(err => {
+                onError(`网络错误: ${err}`);
+                overlay.style.display = 'none';
+            });
+        }
+
+        img.src = objectUrl;
+
     }
 });
 </script>

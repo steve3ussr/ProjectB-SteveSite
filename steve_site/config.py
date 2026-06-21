@@ -29,11 +29,16 @@ class DevConfig(BaseConfig, RedisConfig):
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=15)
     LOG_DIR = "logs"
 
+    R2_BUCKET_NAME = os.getenv('R2_BUCKET_NAME_DEV')
+    R2_CUSTOM_DOMAIN = os.getenv('R2_CUSTOM_DOMAIN_DEV')
+
 class ProdConfig(BaseConfig, RedisConfig):
     DB_FILENAME = 'inst.db'
     REDIS_BASE_URL = os.getenv('REDIS_URL_PROD')
     LOG_DIR = "/app/logs"
 
+    R2_BUCKET_NAME = os.getenv('R2_BUCKET_NAME_PROD')
+    R2_CUSTOM_DOMAIN = os.getenv('R2_CUSTOM_DOMAIN_PROD')
 
 class TestConfig(BaseConfig, RedisConfig):
     # MISSING SQL DB: injected by pytest conftest

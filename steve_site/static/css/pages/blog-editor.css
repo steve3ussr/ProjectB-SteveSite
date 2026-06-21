@@ -1,5 +1,5 @@
 .editor-preview-active-side.markdown-body {
-    padding: 20px; /* 增加一点预览时的边距，看起来更舒服 */
+    padding: 50px;
 }
 
 .form-group {
@@ -18,8 +18,8 @@ input#article-title {
 }
 
 input#article-title:focus, #article-title:focus-visible {
-    outline: #6667AB;        /* 聚焦时边框变蓝 */
-    box-shadow: 0 0 0 1.5px rgba(102,103,171,0.7); /* 增加柔和的外发光 */
+    outline: #6667AB;
+    box-shadow: 0 0 0 1.5px rgba(102,103,171,0.7);
 }
 
 .blog-editor > h2 {
@@ -46,4 +46,41 @@ button[type="submit"] {
     cursor: not-allowed !important;
     transform: none;
     color: #000000 !important;
+}
+
+.blog-upload-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.65);
+    z-index: 100;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+    transition: opacity 0.3s ease;
+}
+
+.blog-upload-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: #5d70e8;
+    animation: spin 1s linear infinite;
+}
+
+.blog-upload-text {
+    color: #ffffff;
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
