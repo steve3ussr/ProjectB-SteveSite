@@ -17,14 +17,20 @@ build/
 
 /.idea/
 
+# UNTRACK files in DEV by default
 /dev_tools/*
 !/dev_tools/mock_image_hosting/app.py
 !/dev_tools/otp_generator.py
 !/dev_tools/con_redis.py
 
+# UNTRACK all files in DEPLOY by default
+/deploy_tools/*
+!/deploy_tools/.env.template
+!/deploy_tools/nginx.conf.template
+!/deploy_tools/docker-compose.yml.template
+!/deploy_tools/deploy.sh.template
+!/deploy_tools/con_remote_redis.py
+!/deploy_tools/con_remote_sqlite_db.py
 
-/deploy_tools/.env
-/deploy_tools/nginx.conf
-/deploy_tools/docker-compose.yml
-/deploy_tools/deploy.sh
+/data/
 

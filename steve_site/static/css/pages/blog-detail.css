@@ -54,15 +54,9 @@ article > footer {
 article > .markdown-body {
     box-sizing: border-box;
     min-width: 200px;
-    max-width: min(75%, 980px);
+    max-width: min(calc(50vw + 307px), 980px);
     margin: 0 auto 0 auto;
-    padding: 20px 40px 0px 40px;
-}
-
-@media (max-width: 768px) {
-    .markdown-body {
-        padding: 15px;
-    }
+    padding: 20px 0 0 0;
 }
 
 .article-title {
@@ -98,3 +92,26 @@ article > .markdown-body {
     opacity: 1;
 }
 
+@media (max-width: 768px) {
+    .blog-management>a>span, .share-btn>span {
+        display: none;
+    }
+
+    article > .markdown-body {
+        max-width: 90%;
+    }
+
+    article > footer {
+        margin-left: 5%;
+        flex-direction: column;
+        margin-right: auto;
+        gap: 5px;
+        padding-top: 0;
+        align-items: flex-start;
+    }
+
+    article > footer > p {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}

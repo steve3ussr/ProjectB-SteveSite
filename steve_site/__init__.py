@@ -75,10 +75,9 @@ def create_app(*args, env_type=None, config=None):
     else:
         modify_logger_for_prod(app)
 
-    # +-------------------+
-    # |     SQLite DB     |
-    # +-------------------+
-
+    # +---------------------------+
+    # |     SQLite + Redis DB     |
+    # +---------------------------+
 
     # determine DB at runtime
     if 'DB' not in app.config:
@@ -88,13 +87,13 @@ def create_app(*args, env_type=None, config=None):
     # determine Redis DB at runtime
     url = f"{app.config['REDIS_BASE_URL']}/{app.config['REDIS_DB_NUM']}"
     app.config['SESSION_REDIS'] = redis.Redis.from_url(url)
+    app.logger.warning(f"redis url: {url}")
 
+    # +--------------------------------+
+    # |     OTP, R2, Flask-Session     |
+    # +--------------------------------+
     app.otp_manager = OTPManager(app)
     Session(app)
-
-    # +-----------------+
-    # |     R2 (S3)     |
-    # +-----------------+
     app.r2_client = boto3.client(
         service_name='s3',
         endpoint_url=f'https://{os.getenv('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com',

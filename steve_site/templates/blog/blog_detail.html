@@ -17,53 +17,57 @@
 
         {% if "edit" in manage_list %}
         <a href="{{ url_for('blog.edit', bid=blog_entry.id) }}">
-            <i class="fas fa-edit"></i>编辑
+            <i class="fas fa-edit"></i><span>编辑</span>
         </a>
         {% endif %}
 
         {% if "publish" in manage_list %}
         <a id="blog-publish-anchor" href="#">
             <i class="fas fa-paper-plane"></i>
+            <span>
             {% if blog_entry.status=="HIDDEN" %}
                 转为公开
             {% else %}
                 发布
             {% endif %}
+            </span>
         </a>
         {% endif %}
 
         {% if "submit" in manage_list %}
         <a id="blog-submit-anchor" href="#">
-            <i class="fas fa-user-check"></i>提交审核
+            <i class="fas fa-user-check"></i><span>提交审核</span>
         </a>
         {% endif %}
 
         {% if "delete" in manage_list %}
         <a id="blog-delete-anchor" href="#">
-            <i class="fas fa-trash-alt"></i>删除
+            <i class="fas fa-trash-alt"></i><span>删除</span>
         </a>
         {% endif %}
 
         {% if "hide" in manage_list %}
         <a id="blog-hide-anchor" href="#">
-            <i class="fas fa-eye-slash"></i>隐藏
+            <i class="fas fa-eye-slash"></i><span>隐藏</span>
         </a>
         {% endif %}
 
         {% if "restore" in manage_list %}
         <a id="blog-restore-anchor" href="#">
             <i class="fas fa-undo-alt"></i>
+            <span>
             {% if blog_entry.status=="HIDDEN" %}
                 恢复至作者可修改
             {% elif blog_entry.status=="DELETED" %}
                 恢复至公开
             {% endif %}
+            </span>
         </a>
         {% endif %}
 
         <div class="share-btn-wrapper">
             <button class="share-btn" onclick="copyLinkToClipboard(this)">
-                <i class="fas fa-external-link-alt"></i>复制链接
+                <i class="fas fa-external-link-alt"></i><span>复制链接</span>
             </button>
             <span id="share-bubble">
                 <span style="margin-right: 4px"><i class="far fa-check-circle" aria-hidden="true"></i></span>

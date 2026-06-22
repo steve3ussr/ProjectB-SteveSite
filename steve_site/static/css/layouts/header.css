@@ -47,3 +47,9 @@
     border: 1px solid #6f7377;
     border-radius: 4px;
 }
+
+@media (max-width: 768px) {
+    .site-header #site-logo {
+        font-size: 1rem;
+    }
+}

@@ -1,5 +1,4 @@
 import redis
-from sshtunnel import SSHTunnelForwarder
 import msgspec
 import paramiko
 import dotenv
@@ -9,14 +8,14 @@ import os
 dotenv.load_dotenv()
 decoder = msgspec.msgpack.Decoder()
 
-class MockDSSKey: pass
-paramiko.DSSKey = MockDSSKey
-
+paramiko.DSSKey = paramiko.RSAKey
+from sshtunnel import SSHTunnelForwarder
 
 SSH_HOST = os.getenv("SSH_HOST")
 SSH_PORT = int(os.getenv("SSH_PORT"))
 SSH_USER = os.getenv("SSH_USER")
 SSH_PASSWORD = os.getenv("SSH_PASSWORD")
+SSH_KEY_PATH = os.getenv("SSH_KEY_PATH")
 
 
 REMOTE_REDIS_HOST = os.getenv("REMOTE_REDIS_HOST")
@@ -27,7 +26,7 @@ REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 with SSHTunnelForwarder(
         (SSH_HOST, SSH_PORT),
         ssh_username=SSH_USER,
-        ssh_password=SSH_PASSWORD,
+        ssh_pkey=SSH_KEY_PATH,
         remote_bind_address=(REMOTE_REDIS_HOST, REMOTE_REDIS_PORT)
 ) as tunnel:
     print(f"本地映射端口: 127.0.0.1:{tunnel.local_bind_port}")

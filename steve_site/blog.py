@@ -13,7 +13,7 @@ markdown_converter = mistune.create_markdown(plugins=['strikethrough', 'table', 
 bp = Blueprint('blog', __name__, url_prefix='/blog')
 
 
-nh3_allowed_tags = nh3.ALLOWED_TAGS | {"input", "img"}
+nh3_allowed_tags = nh3.ALLOWED_TAGS | {"input", "img", 'a'}
 nh3_allowed_attributes = {
     "li": {"class"},
     "input": {
@@ -25,6 +25,9 @@ nh3_allowed_attributes = {
     "img": {
         "src",
         "alt"
+    },
+    'a': {
+        "href"
     }
 }
 

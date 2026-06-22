@@ -9,3 +9,5 @@ build>=1.5.0
 setuptools>=82.0.1
 wheel>=0.47.0
 boto3>=1.43.33
+nanoid>=2.0.0
+pillow>=12.2.0
