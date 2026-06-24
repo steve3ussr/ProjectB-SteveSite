@@ -67,31 +67,6 @@ article > .markdown-body {
     border-bottom: 2px solid #d1d9e0b3;
 }
 
-.share-btn-wrapper {
-    display: inline-block;
-    position: relative;
-}
-
-#share-bubble {
-    visibility: hidden;
-    position: absolute;
-    z-index: 10;
-    bottom: -200%;
-    opacity: 0;
-    transition: all 0.5s ease-in-out;
-    white-space: nowrap;
-    border-radius: 4px;
-    border: 1px solid rgb(158 221 152 / 0.7);
-    color: #828282;
-    background-color: rgb(158 221 152 / 0.2);
-    padding: 4px 10px;
-}
-
-#share-bubble.show {
-    visibility: visible;
-    opacity: 1;
-}
-
 @media (max-width: 768px) {
     .blog-management>a>span, .share-btn>span {
         display: none;

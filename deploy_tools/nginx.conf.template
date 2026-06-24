@@ -27,6 +27,8 @@ http {
         ssl_certificate_key     /etc/nginx/certs/nginx.key;
         ssl_protocols           TLSv1.2 TLSv1.3;
         ssl_ciphers             HIGH:!aNULL:!MD5;
+        ssl_client_certificate  /etc/nginx/certs/cloudflare-origin-pull-ca.pem;
+        ssl_verify_client on;
 
         location / {
             proxy_pass http://my_backend;

@@ -65,16 +65,17 @@
         </a>
         {% endif %}
 
-        <div class="share-btn-wrapper">
-            <button class="share-btn" onclick="copyLinkToClipboard(this)">
-                <i class="fas fa-external-link-alt"></i><span>复制链接</span>
-            </button>
-            <span id="share-bubble">
-                <span style="margin-right: 4px"><i class="far fa-check-circle" aria-hidden="true"></i></span>
-                <span>已复制!</span>
-            </span>
-        </div>
+        <button class="share-btn" onclick="copyLinkToClipboard(this)">
+            <i class="fas fa-external-link-alt"></i><span>复制链接</span>
+        </button>
+    </div>
 
+    <div id="toast-msg-container" class="toast-msg-container">
+        <i id="toast-icon" class="toast-icon"></i>
+        <div id="toast-msg" class="toast-msg">
+            <span id="toast-msg-main">提示内容</span>
+            <span id="toast-msg-callback">提示内容</span>
+        </div>
     </div>
 
     <article class="blog-detail-article">
@@ -126,4 +127,5 @@
     <script src="/static/js/blog-copy-to-clp.js"></script>
     <script src="/static/js/back-to-top.js"></script>
     <script src="/static/js/blog-action.js"></script>
+    <script src="/static/js/toast.js"></script>
 {% endblock %}
