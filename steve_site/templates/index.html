@@ -138,26 +138,27 @@
 <!--        <h2>欢迎来到我的网站！</h2>-->
 <!--        <p>这是网站的主体内容区域。</p>-->
     <div class="release-note-wrapper">
-        <section class="release-note">
+        <section class="release-note release-note-index">
             <h3 class="release-note-title">👏 Release Notes</h3>
-            <div class="release-note-timeline">
+            <div class="release-note-timeline release-note-index">
                 {{ release_note_html | safe }}
             </div>
         </section>
-        <button class="release-note-btn">>> 展示更多</button>
+        <button class="release-note-btn">展示更多 ▼</button>
     </div>
     </main>
     {% endblock %}
 
     <footer class="site-footer">
         <p>&copy; 2026 Steve's Site</p>
-        <p style="font-style: italic; font-size: 0.7rem">An Indie Web Project by <a href="https://github.com/steve3ussr">steve3ussr</a></p>
+        <p style="font-style: italic; font-size: 0.7rem; word-wrap:break-word">An Indie Web Project by <a href="https://github.com/steve3ussr">steve3ussr</a></p>
     </footer>
 
 </body>
 
 {% block scripts %}
     <script src="/static/js/nav.js"></script>
+    <script src="/static/js/release-note-btn.js"></script>
 {% endblock %}
 
 <a style="display: none" href="/honeypot"></a>

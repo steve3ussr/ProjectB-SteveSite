@@ -53,3 +53,9 @@
         font-size: 1rem;
     }
 }
+
+@media (max-width: 400px) {
+    #header-username {
+        display: none;
+    }
+}

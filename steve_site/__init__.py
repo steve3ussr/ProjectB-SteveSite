@@ -183,13 +183,18 @@ def create_app(*args, env_type=None, config=None):
             response.headers['Cache-Control'] = 'no-cache'
         return response
 
-    # +--------------------+
-    # |     Index View     |
-    # +--------------------+
+    # +-----------------------------+
+    # |     Index, Release Note     |
+    # +-----------------------------+
     @app.route('/')
     def resp_index():
         return render_template("index.html",
-                               release_note_html=get_release_note_html(limit=4))
+                               release_note_html=get_release_note_html(limit=3))
+
+    @app.route('/release-note/')
+    def release_note():
+        return render_template("release-note.html",
+                               release_note_html=get_release_note_html())
 
     return app
 

@@ -1,10 +1,9 @@
 import os
 import re
-import mistune
 from steve_site.blog import markdown_converter
 
 
-def get_release_note_html(limit):
+def get_release_note_html(limit=None):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(base_dir, 'static', 'Release Notes.md')
 
