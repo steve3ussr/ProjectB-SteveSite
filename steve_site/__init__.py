@@ -3,13 +3,14 @@ from logging.handlers import RotatingFileHandler
 import boto3
 import redis
 from botocore.config import Config
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request, abort, current_app
 import os
 import sys
 import logging
 from flask_session import Session
 from steve_site import db_api, auth, blog, image
 from steve_site.otp_manager import OTPManager
+from steve_site.release_notes import get_release_note_html
 
 
 def create_inst_path(inst_path):
@@ -187,6 +188,10 @@ def create_app(*args, env_type=None, config=None):
     # +--------------------+
     @app.route('/')
     def resp_index():
-        return render_template("index.html")
+        return render_template("index.html",
+                               release_note_html=get_release_note_html(limit=4))
 
     return app
+
+
+

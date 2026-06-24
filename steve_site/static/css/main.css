@@ -3,6 +3,7 @@
 @import "layouts/header.css";
 @import "layouts/nav.css";
 @import "layouts/side-nav.css";
+@import "layouts/release-note.css";
 
 @import "pages/auth.css";
 @import "pages/blog-detail.css";

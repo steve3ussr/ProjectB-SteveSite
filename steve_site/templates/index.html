@@ -135,8 +135,17 @@
 
     {% block main %}
     <main>
-        <h2>欢迎来到我的网站！</h2>
-        <p>这是网站的主体内容区域。</p>
+<!--        <h2>欢迎来到我的网站！</h2>-->
+<!--        <p>这是网站的主体内容区域。</p>-->
+    <div class="release-note-wrapper">
+        <section class="release-note">
+            <h3 class="release-note-title">👏 Release Notes</h3>
+            <div class="release-note-timeline">
+                {{ release_note_html | safe }}
+            </div>
+        </section>
+        <button class="release-note-btn">>> 展示更多</button>
+    </div>
     </main>
     {% endblock %}
 
