@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
             timeline.style.maxHeight = originalHeight + 'px';
             btn.innerText = "查看全部 »"
         } else if (btn.innerText === "查看全部 »") {
-            window.location.href = "/release-note/";
+            window.location.href = "/release-notes/";
         }
     })
 })

@@ -192,7 +192,7 @@ def create_app(*args, env_type=None, config=None):
                                release_note_html=get_release_note_html(limit=3))
 
     @app.route('/release-notes/')
-    def release_note():
+    def release_notes():
         return render_template("release-notes.html",
                                release_note_html=get_release_note_html())
 

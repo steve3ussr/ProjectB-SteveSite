@@ -5,40 +5,107 @@ REDIS_SERVICE="redis"
 NGINX_SERVICE="nginx"
 FLAG_SKIP_LOG_CONFIRM=0
 
+
+git_try_pull() {
+    echo "正在尝试 git pull"
+    git pull
+    if [ $? -ne 0 ]; then
+        echo -e "git pull 失败, 请检查网络或者配置;\n如冲突可选 git stash 暂存本地更改/ git reset --hard 强行使用远程代码"
+        exit 1
+    fi
+    echo -e "git pull 成功"
+}
+
+
+git_fetch() {
+    git fetch origin
+    if [ $? -ne 0 ]; then
+        echo -e "git fetch 失败, 请检查网络或者配置"
+        exit 1
+    fi
+    echo -e "git fetch 成功"
+}
+
+
+get_reset_commit_num() {
+    echo "enter"
+    echo -e  "origin/master commit message 如下"
+    git log origin/master --oneline -n 10 | awk '{printf "[" NR "] "; printf "\033[33m%s\033[0m", $1; $1=""; print $0}'
+    while true; do
+        read -p "请选择要回退的 commit [1-10]: " reset_commit_num
+        if [[ "${reset_commit_num}" =~ ^([1-9]|10)$ ]]; then
+            break
+        fi
+        echo "无效输入，请重试！"
+    done
+    return $((reset_commit_num))
+}
+
+
+docker_compose_up_and_build() {
+    echo -e 开始 build docker 镜像并启动
+    docker compose up -d --build
+    if [ $? -ne 0 ]; then
+        echo "docker build/up 失败, 请检查配置"
+        exit 1
+    fi
+    echo "部署成功"
+}
+
 echo -e "    ======= 操作列表 =======\n
-[1] 远程更新源代码 + build + 部署
-[2] 本地更新源代码 + build + 部署
-[3] 更改 nginx.conf, 重新加载配置
-[4] 更改 docker-compose.yml, 重新部署
-[5] 更改 .env 文件, 仅重启 web 服务
-[6] 查看实时log
+[1] 远程更新 + build + 部署
+[2] 本地更新 + build + 部署
+[3] 回滚改动 + build + 部署
+[4] 更改 nginx.conf, 重新加载配置
+[5] 更改 docker-compose.yml, 重新部署
+[6] 更改 .env 文件, 仅重启 web 服务
+[7] 查看实时log
 
 按其他任意键退出
 "
-read -n 1 -p "请选择[1-6]: " option
+read -n 1 -p "请选择[1-7]: " option
 echo ""
 
 case ${option} in
     [12])
         if [ ${option} -eq 1 ]; then
-            echo "正在尝试 git pull"
-            git pull
-            if [ $? -ne 0 ]; then
-                echo -e "git pull 失败, 请检查网络或者配置;\n如冲突可选 git stash 暂存本地更改/ git reset --hard 强行使用远程代码"
-                exit 1
-            fi
-            echo -e "git pull 成功\n开始 build docker 镜像并启动"
+            git_try_pull
         fi
-
-        docker compose up -d --build
-        if [ $? -ne 0 ]; then
-            echo "docker build/up 失败, 请检查配置"
-            exit 1
-        fi
-        echo "部署成功"
+        docker_compose_up_and_build
         ;;
 
     3)
+        git_fetch
+        get_reset_commit_num
+        reset_commit_num=$?
+
+        read -n 1 -p $'是否强行回滚? [y/N]: \n  - 强行回滚 (--hard) 将丢弃本地改动\n  - 安全回滚 (--soft) 将改动 stash\n' reset_choice
+        echo ""
+        case "${reset_choice}" in
+            [yY])
+                mode="hard"
+                ;;
+            *)
+                mode="soft"
+                ;;
+        esac
+
+        git merge
+            if [ $? -ne 0 ]; then
+            echo -e "git merge 失败"
+            exit 1
+        fi
+
+        git reset --${mode} HEAD~$((${reset_commit_num}-1))
+        if [ $? -ne 0 ]; then
+            echo -e "git reset 失败"
+            exit 1
+        fi
+
+        docker_compose_up_and_build
+        ;;
+
+    4)
         docker compose exec ${NGINX_SERVICE} nginx -s reload
         if [ $? -ne 0 ]; then
             echo "reload 配置失败, 请检查配置文件"
@@ -47,7 +114,7 @@ case ${option} in
         echo "reload 配置成功"
         ;;
 
-    4)
+    5)
         docker compose up -d
         if [ $? -ne 0 ]; then
             echo "docker 重部署失败, 请检查配置文件"
@@ -55,7 +122,7 @@ case ${option} in
         fi
         ;;
 
-    5)
+    6)
         docker compose up -d --no-deps ${WEB_SERVICE}
         if [ $? -ne 0 ]; then
             echo "${WEB_SERVICE} 容器重新启动失败, 请检查配置"
@@ -64,7 +131,7 @@ case ${option} in
         echo "${WEB_SERVICE} 容器重新启动"
         ;;
 
-    6)
+    7)
         FLAG_SKIP_LOG_CONFIRM=1
         ;;
     *)
